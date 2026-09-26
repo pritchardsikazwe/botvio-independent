@@ -107,7 +107,7 @@ export const DerivProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     if (rehydrateAttempted.current) return;
     rehydrateAttempted.current = true;
-
+    // Remove credentials left by the previous localStorage-based implementation.\n    localStorage.removeItem("deriv_pat_token");\n    localStorage.removeItem("deriv_oauth_token");\n
     /**
      * Credential lookup order. Local storage is only a CREDENTIAL cache — never
      * proof of authentication: we always re-run a live Deriv authorize below.

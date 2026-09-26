@@ -20,13 +20,6 @@ export interface SubscriptionGate {
   isLoading: boolean;
 }
 
-const PLAN_TIER: Record<string, number> = {
-  free: 0,
-  basic: 1,
-  standard: 2,
-  vip: 3,
-};
-
 export function useSubscriptionGate(): SubscriptionGate {
   const { user } = useAuth();
 
@@ -48,8 +41,6 @@ export function useSubscriptionGate(): SubscriptionGate {
 
   const plan = data?.pricing_plans as any;
   const code = plan?.code || "free";
-  const tier = PLAN_TIER[code] ?? 0;
-
   return {
     planCode: code,
     planName: plan?.name || "Free",

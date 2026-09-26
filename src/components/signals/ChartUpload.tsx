@@ -214,12 +214,14 @@ export const ChartUpload = ({ isPremium = false }: ChartUploadProps) => {
       setIsUploading(false);
       setIsAnalyzing(true);
 
-      // The independent Botvio Supabase project intentionally has no Edge Functions.
-      // Never invoke an unavailable function from the browser.
-      setIsAnalyzing(false);
-      toast.info("Chart uploaded. AI image analysis is temporarily unavailable while the independent server-side AI service is being configured.");
-      return;
-      setAnalysisResult(analysisData.analysis);
+      const { data: analysisData, error: analysisError } = await supabase.functions.invoke("analyze-chart", {
+        body: { imageUrl, symbol, timeframe, analysisType },
+      });
+
+      if (analysisError) throw analysisError;
+      if (!analysisData?.structured) throw new Error("AI returned no structured chart analysis.");
+
+      setAnalysisResult(analysisData.analysis || analysisData.structured.analysis || "");
       setStructuredResult(analysisData.structured);
       toast.success("Chart analyzed successfully!");
 

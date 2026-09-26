@@ -20,20 +20,23 @@ export const useDerivTokens = () => {
   const fetchTokens = useCallback(async () => {
     if (!user) { setTokens([]); return; }
     setLoading(true);
-    const { data } = await supabase
-      .from("user_deriv_tokens" as any)
-      .select("id, loginid, is_virtual, currency, label, is_active, created_at")
-      .eq("user_id", user.id)
-      .order("created_at", { ascending: true });
-    setTokens((data as any[] ?? []).map((d: any) => ({
-      id: d.id,
-      loginid: d.loginid,
-      is_virtual: d.is_virtual,
-      currency: d.currency,
-      label: d.label,
-      is_active: d.is_active,
-      created_at: d.created_at,
-    })));
+
+    // Never persist or query raw Deriv credentials from Supabase.
+    // The active credential is scoped to this browser tab/session.
+    const raw = sessionStorage.getItem("deriv_pat_token") || sessionStorage.getItem("deriv_oauth_token");
+    const loginid = sessionStorage.getItem("deriv_loginid");
+    const is_virtual = sessionStorage.getItem("deriv_is_virtual") === "true";
+    const currency = sessionStorage.getItem("deriv_currency");
+
+    setTokens(raw && loginid && currency ? [{
+      id: `session-${loginid}`,
+      loginid,
+      is_virtual,
+      currency,
+      label: is_virtual ? "Demo" : "Real",
+      is_active: true,
+      created_at: new Date().toISOString(),
+    }] : []);
     setLoading(false);
   }, [user?.id]);
 
@@ -41,7 +44,6 @@ export const useDerivTokens = () => {
 
   const activeToken = tokens.find((t) => t.is_active) ?? null;
 
-  /** Upsert a token after Deriv authorize */
   const upsertToken = useCallback(async (params: {
     loginid: string;
     is_virtual: boolean;
@@ -50,62 +52,25 @@ export const useDerivTokens = () => {
     label?: string;
   }) => {
     if (!user) return;
-
-    // Deactivate all first
-    await supabase
-      .from("user_deriv_tokens" as any)
-      .update({ is_active: false } as any)
-      .eq("user_id", user.id)
-      .eq("is_active", true);
-
-    // Upsert the new token as active
-    await supabase
-      .from("user_deriv_tokens" as any)
-      .upsert({
-        user_id: user.id,
-        loginid: params.loginid,
-        is_virtual: params.is_virtual,
-        currency: params.currency,
-        token_encrypted: params.token_encrypted,
-        label: params.label ?? (params.is_virtual ? "Demo" : "Real"),
-        is_active: true,
-      } as any, { onConflict: "user_id,loginid" });
-
-    console.log(`[TOKEN] Upserted & activated: ${params.loginid} is_virtual=${params.is_virtual}`);
+    sessionStorage.setItem("deriv_loginid", params.loginid);
+    sessionStorage.setItem("deriv_is_virtual", String(params.is_virtual));
+    sessionStorage.setItem("deriv_currency", params.currency);
     await fetchTokens();
   }, [user?.id, fetchTokens]);
 
-  /** Switch active token (deactivate all, activate selected) */
   const switchToken = useCallback(async (tokenId: string) => {
-    if (!user) return;
-
-    // Deactivate all
-    await supabase
-      .from("user_deriv_tokens" as any)
-      .update({ is_active: false } as any)
-      .eq("user_id", user.id)
-      .eq("is_active", true);
-
-    // Activate selected
-    await supabase
-      .from("user_deriv_tokens" as any)
-      .update({ is_active: true } as any)
-      .eq("id", tokenId)
-      .eq("user_id", user.id);
-
-    console.log(`[TOKEN] Switched active to token_id=${tokenId}`);
+    if (!user || !tokenId.startsWith("session-")) return;
     await fetchTokens();
   }, [user?.id, fetchTokens]);
 
-  /** Remove a token */
   const removeToken = useCallback(async (tokenId: string) => {
-    if (!user) return;
-    await supabase
-      .from("user_deriv_tokens" as any)
-      .delete()
-      .eq("id", tokenId)
-      .eq("user_id", user.id);
-    console.log(`[TOKEN] Removed token_id=${tokenId}`);
+    if (!user || !tokenId.startsWith("session-")) return;
+    sessionStorage.removeItem("deriv_pat_token");
+    sessionStorage.removeItem("deriv_oauth_token");
+    sessionStorage.removeItem("deriv_loginid");
+    sessionStorage.removeItem("deriv_is_virtual");
+    sessionStorage.removeItem("deriv_currency");
+    window.dispatchEvent(new CustomEvent("deriv:token-cleared"));
     await fetchTokens();
   }, [user?.id, fetchTokens]);
 

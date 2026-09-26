@@ -4,6 +4,7 @@ import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { RequireSuperAdmin } from "@/components/admin/RequireSuperAdmin";
 import { AdminLogin } from "@/components/admin/AdminLogin";
 import { PaidRouteGuard } from "@/components/access/PaidRouteGuard";
+import { RequireAuth } from "@/components/access/RequireAuth";
 import { ReactNode } from "react";
 
 const Paid = ({ children }: { children: ReactNode }) => (
@@ -164,29 +165,29 @@ export const AppRoutes = () => (
     <Route path=".lovable/oauth/consent" element={<OAuthConsent />} />
     <Route path="landing" element={<Landing />} />
     <Route path="install" element={<Install />} />
-    <Route path="dashboard" element={<Dashboard />} />
-    <Route path="accounts" element={<Accounts />} />
-    <Route path="connections" element={<Connections />} />
-    <Route path="bridge-request" element={<BridgeRequest />} />
-    <Route path="trade-history" element={<TradeHistory />} />
-    <Route path="providers" element={<Providers />} />
-    <Route path="copy-trading" element={<CopyMarketplace />} />
+    <Route path="dashboard" element={<RequireAuth><Dashboard /></RequireAuth>} />
+    <Route path="accounts" element={<RequireAuth><Accounts /></RequireAuth>} />
+    <Route path="connections" element={<RequireAuth><Connections /></RequireAuth>} />
+    <Route path="bridge-request" element={<RequireAuth><BridgeRequest /></RequireAuth>} />
+    <Route path="trade-history" element={<RequireAuth><TradeHistory /></RequireAuth>} />
+    <Route path="providers" element={<RequireAuth><Providers /></RequireAuth>} />
+    <Route path="copy-trading" element={<RequireAuth><CopyMarketplace /></RequireAuth>} />
     <Route path="copy-trading/provider/:providerId" element={<CopyProviderProfile />} />
     <Route path="copy-trading/start/:providerId" element={<CopyStart />} />
-    <Route path="copy-trading/my" element={<MyCopyTrading />} />
-    <Route path="copy-trading/become-provider" element={<BecomeProvider />} />
-    <Route path="provider-dashboard" element={<ProviderDashboard />} />
+    <Route path="copy-trading/my" element={<RequireAuth><MyCopyTrading /></RequireAuth>} />
+    <Route path="copy-trading/become-provider" element={<RequireAuth><BecomeProvider /></RequireAuth>} />
+    <Route path="provider-dashboard" element={<RequireAuth><ProviderDashboard /></RequireAuth>} />
     <Route path="bots" element={<Paid><Bots /></Paid>} />
-    <Route path="billing" element={<Billing />} />
+    <Route path="billing" element={<RequireAuth><Billing /></RequireAuth>} />
 
     {/* Admin */}
     <Route path="admin/login" element={<ErrorBoundary><AdminLogin /></ErrorBoundary>} />
     <Route path="admin" element={<ErrorBoundary><RequireSuperAdmin><Admin /></RequireSuperAdmin></ErrorBoundary>} />
     <Route path="admin/*" element={<ErrorBoundary><RequireSuperAdmin><Admin /></RequireSuperAdmin></ErrorBoundary>} />
 
-    <Route path="p2p" element={<P2P />} />
-    <Route path="affiliate" element={<Affiliate />} />
-    <Route path="strategies" element={<Strategies />} />
+    <Route path="p2p" element={<RequireAuth><P2P /></RequireAuth>} />
+    <Route path="affiliate" element={<RequireAuth><Affiliate /></RequireAuth>} />
+    <Route path="strategies" element={<RequireAuth><Strategies /></RequireAuth>} />
     <Route path="s/:slug" element={<StrategyDetail />} />
     <Route path="strategies/:category/:slug" element={<StrategyDetail />} />
     <Route path="r/:code" element={<ReferralRedirect />} />
@@ -195,10 +196,10 @@ export const AppRoutes = () => (
     <Route path="signals/history" element={<Paid><SignalsHistory /></Paid>} />
     <Route path="signals-history" element={<Paid><SignalsHistory /></Paid>} />
     <Route path="track-record" element={<Paid><SignalsHistory /></Paid>} />
-    <Route path="marketplace" element={<Marketplace />} />
-    <Route path="my-products" element={<MyProducts />} />
-    <Route path="settings" element={<Settings />} />
-    <Route path="settings/binance" element={<BinanceSettings />} />
+    <Route path="marketplace" element={<RequireAuth><Marketplace /></RequireAuth>} />
+    <Route path="my-products" element={<RequireAuth><MyProducts /></RequireAuth>} />
+    <Route path="settings" element={<RequireAuth><Settings /></RequireAuth>} />
+    <Route path="settings/binance" element={<RequireAuth><BinanceSettings /></RequireAuth>} />
     <Route path="settings/deriv-otp" element={<ErrorBoundary><RequireSuperAdmin><DerivOtpTester /></RequireSuperAdmin></ErrorBoundary>} />
     <Route path="binance" element={<Paid><BinanceHub /></Paid>} />
     <Route path="bots/binance" element={<Paid><BinanceBots /></Paid>} />
@@ -298,15 +299,15 @@ export const AppRoutes = () => (
     <Route path="markets/africa" element={<AfricaMarket />} />
     <Route path="trade-modes" element={<Paid><TradeModes /></Paid>} />
     <Route path="deriv-options" element={<Paid><DerivOptions /></Paid>} />
-    <Route path="deriv-app" element={<DerivApp />} />
-    <Route path="rise-fall" element={<RiseFall />} />
+    <Route path="deriv-app" element={<RequireAuth><DerivApp /></RequireAuth>} />
+    <Route path="rise-fall" element={<RequireAuth><RiseFall /></RequireAuth>} />
     <Route path="binary-options" element={<Paid><BinaryOptions /></Paid>} />
     <Route path="brokers" element={<BrokersIndex />} />
     <Route path="brokers/:slug" element={<BrokerPage />} />
-    <Route path="live" element={<LiveFeed />} />
-    <Route path="flipping-challenges" element={<FlippingChallenges />} />
+    <Route path="live" element={<RequireAuth><LiveFeed /></RequireAuth>} />
+    <Route path="flipping-challenges" element={<RequireAuth><FlippingChallenges /></RequireAuth>} />
     <Route path="reset-password" element={<ResetPassword />} />
-    <Route path="sports-betting" element={<SportsBetting />} />
+    <Route path="sports-betting" element={<RequireAuth><SportsBetting /></RequireAuth>} />
     <Route path="unsubscribe" element={<Unsubscribe />} />
     <Route path="trade/style/:styleId" element={<Paid><StyleTrade /></Paid>} />
     <Route path="blog" element={<Blog />} />

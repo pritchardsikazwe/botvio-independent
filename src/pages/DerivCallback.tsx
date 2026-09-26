@@ -106,7 +106,7 @@ export default function DerivCallbackPage() {
         localStorage.removeItem(OAUTH_COOLDOWN_KEY);
 
         setTimeout(() => {
-          navigate("/accounts?oauth=complete");
+          navigate("/connections?oauth=complete");
         }, 2000);
       } catch (err: any) {
         clearPKCEStorage();
@@ -138,7 +138,7 @@ export default function DerivCallbackPage() {
 
   const handleRetry = () => {
     if (retryCountdown > 0) return;
-    navigate("/accounts");
+    navigate("/connections");
   };
 
   return (

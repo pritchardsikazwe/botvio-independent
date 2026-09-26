@@ -208,7 +208,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     // Update profile with country, whatsapp, and display name if provided
     if (!error && data?.user) {
-      const updates: Record<string, string> = {};
+      const updates: { country?: string; display_name?: string } = {};
       if (country) updates.country = country;
       if (displayName) updates.display_name = displayName;
       if (Object.keys(updates).length > 0) {

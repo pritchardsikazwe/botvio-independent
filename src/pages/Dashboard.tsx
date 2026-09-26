@@ -71,7 +71,7 @@ const Dashboard = () => {
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
-            <Button variant="gold" asChild><Link to="/accounts"><Wallet className="mr-2 h-4 w-4" />Connect Account</Link></Button>
+            <Button variant="gold" asChild><Link to="/connections"><Wallet className="mr-2 h-4 w-4" />Connect Account</Link></Button>
             <Button variant="outline" asChild><Link to="/signals">View Signals</Link></Button>
           </div>
         </div>
@@ -83,7 +83,7 @@ const Dashboard = () => {
                 <h2 className="font-semibold text-lg">Start your Botvio journey</h2>
                 <p className="text-sm text-muted-foreground mt-1">Connect a trading account to unlock account monitoring and automated trading workflows.</p>
               </div>
-              <Button variant="gold" asChild><Link to="/accounts">Connect your first account <ArrowRight className="ml-2 h-4 w-4" /></Link></Button>
+              <Button variant="gold" asChild><Link to="/connections">Connect your first account <ArrowRight className="ml-2 h-4 w-4" /></Link></Button>
             </CardContent>
           </Card>
         )}
@@ -382,7 +382,7 @@ const Dashboard = () => {
         {/* Quick Actions */}
         <div className="mt-8 grid grid-cols-2 md:grid-cols-4 gap-4">
           <Button variant="outline" className="h-auto py-4 flex-col" asChild>
-            <Link to="/accounts">
+            <Link to="/connections">
               <Wallet className="h-6 w-6 mb-2" />
               <span>Connect Account</span>
             </Link>

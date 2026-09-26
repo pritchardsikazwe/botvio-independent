@@ -63,12 +63,30 @@ const Dashboard = () => {
       
       <main className="container mx-auto px-4 py-6">
         {/* Welcome Section */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">Trading Dashboard</h1>
-          <p className="text-muted-foreground">
-            Manage your trading bots and copy trading subscriptions
-          </p>
+        <div className="mb-8 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+          <div>
+            <h1 className="text-3xl font-bold mb-2">Trading Dashboard</h1>
+            <p className="text-muted-foreground">
+              Manage your accounts, bots, signals and copy trading from one place.
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <Button variant="gold" asChild><Link to="/connections"><Wallet className="mr-2 h-4 w-4" />Connect Account</Link></Button>
+            <Button variant="outline" asChild><Link to="/signals">View Signals</Link></Button>
+          </div>
         </div>
+
+        {connectedAccounts === 0 && (
+          <Card className="glass-card mb-8 border-primary/30">
+            <CardContent className="p-5 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+              <div>
+                <h2 className="font-semibold text-lg">Start your Botvio journey</h2>
+                <p className="text-sm text-muted-foreground mt-1">Connect a trading account to unlock account monitoring and automated trading workflows.</p>
+              </div>
+              <Button variant="gold" asChild><Link to="/connections">Connect your first account <ArrowRight className="ml-2 h-4 w-4" /></Link></Button>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
@@ -364,7 +382,7 @@ const Dashboard = () => {
         {/* Quick Actions */}
         <div className="mt-8 grid grid-cols-2 md:grid-cols-4 gap-4">
           <Button variant="outline" className="h-auto py-4 flex-col" asChild>
-            <Link to="/accounts">
+            <Link to="/connections">
               <Wallet className="h-6 w-6 mb-2" />
               <span>Connect Account</span>
             </Link>

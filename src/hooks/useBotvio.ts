@@ -54,8 +54,7 @@ export function useAddTradingAccount() {
           user_id: user!.id,
           broker: account.broker,
           label: account.label,
-          api_key_encrypted: account.api_key,
-          api_secret_encrypted: account.api_secret || null,
+          // Deriv credentials are handled by the OAuth/session connection flow, never stored here.\n          api_key_encrypted: account.broker === "deriv" ? "managed-by-deriv-oauth" : account.api_key,\n          api_secret_encrypted: account.broker === "deriv" ? null : (account.api_secret || null),
           login_id: account.login_id || null,
         })
         .select()

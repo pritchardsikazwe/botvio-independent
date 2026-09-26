@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { AuthModal } from "@/components/auth/AuthModal";
@@ -41,6 +41,13 @@ const HomeMockup = () => {
   const [authOpen, setAuthOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const start = () => setAuthOpen(true);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("authRequired") === "1") {
+      setAuthOpen(true);
+    }
+  }, []);
 
   return (
     <div className="min-h-screen overflow-x-hidden bg-background text-foreground">

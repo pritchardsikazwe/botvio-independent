@@ -101,8 +101,8 @@ export const HomeChartAnalyzer = () => {
 
     try {
       setBusy("uploading");
-      const { data: session } = await supabase.auth.getUser();
-      const owner = session?.user?.id || "guest";
+      const { data: userData } = await supabase.auth.getUser();
+      const owner = userData?.user?.id || "guest";
       const ext = file.name.split(".").pop() || "png";
       const path = `${owner}/${Date.now()}.${ext}`;
 

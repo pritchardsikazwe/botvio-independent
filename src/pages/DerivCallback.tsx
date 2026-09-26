@@ -5,7 +5,6 @@ import { clearPKCEStorage } from "@/lib/derivAuth";
 import { Loader2, CheckCircle, XCircle, RefreshCw } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { useAuth } from "@/contexts/AuthContext";
 
 const RETRY_COOLDOWN_KEY = "botvio_oauth_retry_at";
 const OAUTH_COOLDOWN_KEY = "botvio_oauth_cooldown_until";
@@ -16,7 +15,6 @@ export default function DerivCallbackPage() {
   const [searchParams] = useSearchParams();
   const [retryCountdown, setRetryCountdown] = useState(0);
   const navigate = useNavigate();
-  const { user } = useAuth();
 
   useEffect(() => {
     setStatus("error");

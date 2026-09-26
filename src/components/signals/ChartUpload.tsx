@@ -214,22 +214,27 @@ export const ChartUpload = ({ isPremium = false }: ChartUploadProps) => {
       setIsUploading(false);
       setIsAnalyzing(true);
 
-      const { data: analysisData, error: analysisError } = await supabase.functions.invoke("analyze-chart", {
-        body: { imageUrl, symbol, timeframe, analysisType },
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.access_token) throw new Error("Please sign in before using AI Chart Analysis.");
+
+      const apiKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || import.meta.env.VITE_SUPABASE_ANON_KEY;
+      const analysisResponse = await fetch("https://api.botvio.live/functions/v1/analyze-chart", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${session.access_token}`,
+          ...(apiKey ? { "apikey": apiKey } : {}),
+        },
+        body: JSON.stringify({ imageUrl, symbol, timeframe, analysisType }),
       });
 
-      if (analysisError) {
-        let serverMessage = analysisError.message || "Edge Function request failed.";
-        try {
-          const response = (analysisError as any).context;
-          if (response && typeof response.json === "function") {
-            const payload = await response.json();
-            serverMessage = payload?.error || payload?.message || serverMessage;
-          }
-        } catch {
-          // Keep the original FunctionsHttpError message when the response body is unavailable.
-        }
-        throw new Error(serverMessage);
+      const analysisData = await analysisResponse.json().catch(() => null);
+      if (!analysisResponse.ok) {
+        throw new Error(
+          analysisData?.error ||
+          analysisData?.message ||
+          `Chart analysis API returned HTTP ${analysisResponse.status}.`
+        );
       }
       if (!analysisData?.structured) throw new Error("AI returned no structured chart analysis.");
 

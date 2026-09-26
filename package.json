@@ -11,7 +11,7 @@
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",
-    "deploy:cloudflare": "wrangler deploy --name botvio-independent"
+    "deploy:cloudflare": "npx wrangler deploy --name botvio-independent"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",

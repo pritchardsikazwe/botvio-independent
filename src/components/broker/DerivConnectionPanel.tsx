@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useDeriv } from "@/contexts/DerivContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -15,9 +15,7 @@ import {
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { getDerivConfig, resolveDerivEnv } from "@/config/derivEnv";
-import { setDerivSessionToken } from "@/lib/derivAuth";
-import { useOAuthCooldown } from "@/hooks/useOAuthCooldown";
-import { useDerivTokens } from "@/hooks/useDerivTokens";
+import { setDerivSessionToken, clearDerivSessionToken } from "@/lib/derivAuth";
 
 
 interface DerivConnectionPanelProps {
@@ -42,18 +40,7 @@ export const DerivConnectionPanel = ({ onConnected, showAccountSelection = true 
   const derivConfig = getDerivConfig();
   const currentEnv = resolveDerivEnv();
 
-  // Consolidated OAuth mutex + cooldown
-  const {
-    cooldownRemaining,
-    loginInProgress,
-    canLogin,
-    acquireLogin,
-    releaseLogin,
-    setStoredSession,
-    clearStoredSession,
-  } = useOAuthCooldown();
 
-  const oauthPopupRef = useRef<Window | null>(null);
 
   // Load existing connection from database
   useEffect(() => {
@@ -111,33 +98,9 @@ export const DerivConnectionPanel = ({ onConnected, showAccountSelection = true 
       setIsVerifying(false);
     }
   };
-  const handleOAuthConnect = () => {
-    // Mutex + cooldown check
-    if (!canLogin) {
-      if (loginInProgress) {
-        // Focus existing popup if still open
-        if (oauthPopupRef.current && !oauthPopupRef.current.closed) {
-          oauthPopupRef.current.focus();
-          toast.info("OAuth window is already open");
-        } else {
-          toast.warning("Login in progress, please wait...");
-        }
-        return;
-      }
-      toast.warning(`Please wait ${cooldownRemaining}s before trying again`);
-      return;
-    }
-
-    // Acquire mutex
-    if (!acquireLogin()) return;
-
-    // Use the new PKCE-based OAuth flow — full page redirect
-    startDerivOAuthLogin();
-  };
-
   const handleDisconnect = async () => {
     disconnect();
-    clearStoredSession();
+    clearDerivSessionToken();
     setApiToken("");
     if (user) {
       await supabase

@@ -85,7 +85,7 @@ export const AuthModal = ({ open, onOpenChange }: AuthModalProps) => {
       onOpenChange(false);
       setEmail(""); setPassword("");
       const next = new URLSearchParams(window.location.search).get("next");
-      navigate(next ? decodeURIComponent(next) : "/dashboard");
+      navigate(next || "/dashboard");
     }
     setLoading(false);
   };

@@ -1,11 +1,10 @@
 import { useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Loader2, Copy, Check } from "lucide-react";
+import { Copy, Check } from "lucide-react";
 import { toast } from "sonner";
 import { startDerivOAuthLogin } from "@/lib/derivAuth";
 
@@ -14,41 +13,22 @@ const ACCOUNT_RE = /^[A-Z]{2,5}\d{3,12}$/;
 export default function DerivOtpTester() {
   const [accountId, setAccountId] = useState("");
   const [environment, setEnvironment] = useState<"real" | "demo">("real");
-  const [loading, setLoading] = useState(false);
   const [wsUrl, setWsUrl] = useState<string | null>(null);
   const [errorDetails, setErrorDetails] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const id = accountId.trim().toUpperCase();
     if (!ACCOUNT_RE.test(id)) {
       toast.error("Invalid account ID format (e.g. CR1234567 or VRTC1234567)");
       return;
     }
-    setLoading(true);
     setWsUrl(null);
-    setErrorDetails(null);
-    try {
-      const { data, error } = await supabase.functions.invoke("deriv-admin-otp", {
-        body: { account_id: id, environment },
-      });
-      if (error) {
-        setErrorDetails(error.message || "Request failed");
-        toast.error("OTP request failed");
-      } else if (data?.ws_url) {
-        setWsUrl(data.ws_url);
-        toast.success("Fresh WS URL generated");
-      } else {
-        setErrorDetails(JSON.stringify(data, null, 2));
-        toast.error("No WS URL returned");
-      }
-    } catch (err) {
-      setErrorDetails(String(err));
-      toast.error("Network error");
-    } finally {
-      setLoading(false);
-    }
+    setErrorDetails(
+      "Server-side Deriv OTP generation is temporarily disabled. Botvio currently uses the session-only PAT connection flow instead."
+    );
+    toast.info("OTP generation is temporarily unavailable");
   };
 
   const copy = async () => {
@@ -64,26 +44,28 @@ export default function DerivOtpTester() {
         <CardHeader>
           <CardTitle>Deriv OTP Tester</CardTitle>
           <CardDescription>
-            Request a fresh WebSocket URL for any of your Deriv accounts. The
-            new Deriv API requires an OAuth2 access token (legacy PATs no
-            longer work), so connect your Deriv account first. OTPs are
-            short-lived — connect immediately after generating.
+            Server-side OTP generation is temporarily disabled while Botvio runs
+            without Supabase Edge Functions. Use the session-only Deriv
+            connection flow from Connections.
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="mb-5 flex items-center justify-between gap-3 rounded-md border border-border bg-muted/40 p-3">
+          <div className="mb-5 rounded-md border border-border bg-muted/40 p-3">
             <p className="text-xs text-muted-foreground">
-              No Deriv OAuth token yet? Connect first so we can request OTPs on your behalf.
+              No credentials are sent to a missing Edge Function. Connect Deriv
+              from the main Connections page instead.
             </p>
             <Button
               type="button"
               variant="outline"
               size="sm"
+              className="mt-3"
               onClick={() => startDerivOAuthLogin()}
             >
               Connect Deriv
             </Button>
           </div>
+
           <form onSubmit={handleSubmit} className="space-y-5">
             <div className="space-y-2">
               <Label htmlFor="account_id">Account ID</Label>
@@ -116,9 +98,8 @@ export default function DerivOtpTester() {
               </RadioGroup>
             </div>
 
-            <Button type="submit" disabled={loading} className="w-full">
-              {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {loading ? "Requesting..." : "Request Fresh WS URL"}
+            <Button type="submit" className="w-full">
+              Request Fresh WS URL
             </Button>
           </form>
 
@@ -131,16 +112,13 @@ export default function DerivOtpTester() {
                   {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
                 </Button>
               </div>
-              <p className="text-xs text-muted-foreground">
-                Connect immediately — OTP expires within seconds.
-              </p>
             </div>
           )}
 
           {errorDetails && (
             <div className="mt-6 space-y-2">
-              <Label className="text-destructive">Error</Label>
-              <pre className="text-xs bg-muted p-3 rounded-md overflow-auto max-h-64 whitespace-pre-wrap break-all">
+              <Label className="text-destructive">Status</Label>
+              <pre className="text-xs bg-muted p-3 rounded-md overflow-auto whitespace-pre-wrap break-all">
                 {errorDetails}
               </pre>
             </div>

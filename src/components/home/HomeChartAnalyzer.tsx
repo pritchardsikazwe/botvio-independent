@@ -111,11 +111,28 @@ export const HomeChartAnalyzer = () => {
       const { data: urlData } = supabase.storage.from("charts").getPublicUrl(up.path);
 
       setBusy("analyzing");
-      const { data: analysisData, error: analysisError } = await supabase.functions.invoke("analyze-chart", {
-        body: { imageUrl: urlData.publicUrl, analysisType: "full" },
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.access_token) throw new Error("Please sign in before using AI Chart Analysis.");
+
+      const apiKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || import.meta.env.VITE_SUPABASE_ANON_KEY;
+      const analysisResponse = await fetch("https://api.botvio.live/functions/v1/analyze-chart", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${session.access_token}`,
+          ...(apiKey ? { "apikey": apiKey } : {}),
+        },
+        body: JSON.stringify({ imageUrl: urlData.publicUrl, analysisType: "full" }),
       });
 
-      if (analysisError) throw analysisError;
+      const analysisData = await analysisResponse.json().catch(() => null);
+      if (!analysisResponse.ok) {
+        throw new Error(
+          analysisData?.error ||
+          analysisData?.message ||
+          `Chart analysis API returned HTTP ${analysisResponse.status}.`
+        );
+      }
       if (!analysisData?.structured) throw new Error("AI returned no structured chart analysis.");
 
       const structured = analysisData.structured as Structured;

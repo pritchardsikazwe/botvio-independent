@@ -3,7 +3,6 @@ import { useState, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
-import { readFunctionError } from "@/lib/chartAnalysisError";
 import { ChartSendToMt5Button } from "@/components/chart/ChartSendToMt5Button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -215,31 +214,11 @@ export const ChartUpload = ({ isPremium = false }: ChartUploadProps) => {
       setIsUploading(false);
       setIsAnalyzing(true);
 
-      const { data: analysisData, error: analysisError } = await supabase.functions.invoke(
-        "analyze-chart", { body: { imageUrl, symbol, timeframe, analysisType } }
-      );
-      if (analysisError) {
-        const parsed = await readFunctionError(analysisError);
-        toast.error(parsed.message);
-        return;
-      }
-
-      if (analysisData.error) {
-        if (analysisData.error_code === "daily_limit" || analysisData.redirect || analysisData.trial_expired) {
-          setServerBlock({
-            reason: analysisData.trial_expired ? "trial_expired" : (analysisData.reason || "daily_limit"),
-            message: analysisData.error || "Upload blocked by plan limits.",
-            remaining: analysisData.remaining,
-            daily_max: analysisData.daily_max,
-          });
-          setShowUpgradeModal(true);
-          if (analysisData.error) toast.error(analysisData.error);
-          return;
-        }
-        toast.error(analysisData.error);
-        return;
-      }
-
+      // The independent Botvio Supabase project intentionally has no Edge Functions.
+      // Never invoke an unavailable function from the browser.
+      setIsAnalyzing(false);
+      toast.info("Chart uploaded. AI image analysis is temporarily unavailable while the independent server-side AI service is being configured.");
+      return;
       setAnalysisResult(analysisData.analysis);
       setStructuredResult(analysisData.structured);
       toast.success("Chart analyzed successfully!");

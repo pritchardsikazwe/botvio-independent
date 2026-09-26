@@ -205,8 +205,8 @@ const Connections = () => {
           <div className="flex items-start gap-3 p-3 rounded-lg border border-border bg-muted/30">
             <ShieldCheck className="h-5 w-5 text-success mt-0.5 shrink-0" />
             <div>
-              <p className="text-sm font-medium">Tokens encrypted at rest</p>
-              <p className="text-xs text-muted-foreground">Server-side only — never exposed to your browser.</p>
+              <p className="text-sm font-medium">Credentials stay session-only</p>
+              <p className="text-xs text-muted-foreground">Deriv credentials are not persisted in the Botvio database.</p>
             </div>
           </div>
           <div className="flex items-start gap-3 p-3 rounded-lg border border-border bg-muted/30">
@@ -241,11 +241,9 @@ const Connections = () => {
             {/* Important notice — legacy PATs no longer work */}
             <Alert className="border-warning/40 bg-warning/5">
               <Info className="h-4 w-4 text-warning" />
-              <AlertTitle>Deriv now requires OAuth — legacy API tokens are deprecated</AlertTitle>
+              <AlertTitle>Deriv connection options</AlertTitle>
               <AlertDescription className="text-sm text-muted-foreground">
-                If your old API token suddenly stopped working, that's why. Click{" "}
-                <strong>Connect with Deriv</strong> below to authorize Botvio in one step —
-                no token copying, no expiry headaches.
+                Use a current Deriv Personal Access Token (PAT) to connect directly from this browser session. OAuth is temporarily disabled until a server-side token exchange is configured.
               </AlertDescription>
             </Alert>
 

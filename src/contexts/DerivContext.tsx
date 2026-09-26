@@ -117,37 +117,12 @@ export const DerivProvider = ({ children }: { children: ReactNode }) => {
      * 3. a connected Deriv row in trading_accounts
      */
     const findCredential = async (): Promise<string | null> => {
-      const local =
-        localStorage.getItem("deriv_pat_token") ||
-        localStorage.getItem("deriv_oauth_token");
-      if (local && local.length >= 10) return local;
-
-      const { data: auth } = await supabase.auth.getUser();
-      const uid = auth?.user?.id;
-      if (!uid) return null;
-
-      const { data: tokenRows } = await supabase
-        .from("user_deriv_tokens" as any)
-        .select("token_encrypted, is_active, created_at")
-        .eq("user_id", uid)
-        .eq("is_active", true)
-        .order("created_at", { ascending: false })
-        .limit(1);
-      const dbToken = (tokenRows as any[] | null)?.[0]?.token_encrypted;
-      if (dbToken && dbToken !== "session-active" && dbToken.length >= 10) return dbToken;
-
-      const { data: accountRows } = await supabase
-        .from("trading_accounts" as any)
-        .select("api_key_encrypted, created_at")
-        .eq("user_id", uid)
-        .eq("broker", "deriv")
-        .eq("connection_status", "connected")
-        .order("created_at", { ascending: false })
-        .limit(1);
-      const acctToken = (accountRows as any[] | null)?.[0]?.api_key_encrypted;
-      if (acctToken && acctToken.length >= 10) return acctToken;
-
-      return null;
+      // Credentials are never read from Supabase/browser database fields.
+      // The current credential is scoped to this browser tab via sessionStorage.
+      const stored =
+        sessionStorage.getItem("deriv_pat_token") ||
+        sessionStorage.getItem("deriv_oauth_token");
+      return stored && stored.length >= 10 ? stored : null;
     };
 
     (async () => {
@@ -167,13 +142,13 @@ export const DerivProvider = ({ children }: { children: ReactNode }) => {
       console.log("[DERIV][init] rehydrating Deriv session — performing fresh authorization");
       try {
         const bal = await derivAPI.connect(stored);
-        localStorage.setItem("deriv_pat_token", stored);
+        sessionStorage.setItem("deriv_pat_token", stored);
         console.log(`[DERIV] Authorization successful — Account: ${bal.loginid}`);
         console.log("[DERIV] Global connection state = connected");
       } catch (e) {
         console.warn("[DERIV][init] stored session invalid:", e instanceof Error ? e.message : e);
-        localStorage.removeItem("deriv_pat_token");
-        localStorage.removeItem("deriv_oauth_token");
+        sessionStorage.removeItem("deriv_pat_token");
+        sessionStorage.removeItem("deriv_oauth_token");
       } finally {
         setInitializing(false);
       }
@@ -247,8 +222,8 @@ export const DerivProvider = ({ children }: { children: ReactNode }) => {
       // placeholder — that used to wipe the token needed to re-authorize after
       // a refresh. Only register the account when we still hold the credential.
       const held =
-        localStorage.getItem("deriv_pat_token") ||
-        localStorage.getItem("deriv_oauth_token");
+        sessionStorage.getItem("deriv_pat_token") ||
+        sessionStorage.getItem("deriv_oauth_token");
       if (held && held.length >= 10) {
         upsertToken({
           loginid: info.loginid,

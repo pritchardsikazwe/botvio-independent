@@ -12,7 +12,6 @@ import { Loader2, Mail, Lock, User, Globe, Phone, Crown, Zap, Star, Gift } from 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { lovable } from "@/integrations/lovable/index";
 
 const PLANS = [
   { code: "free", name: "Free Trial", price: "$0/mo", icon: Gift, description: "5 chart analyses/day" },
@@ -59,8 +58,11 @@ export const AuthModal = ({ open, onOpenChange }: AuthModalProps) => {
   const handleGoogleSignIn = async () => {
     setGoogleLoading(true);
     try {
-      const { error } = await lovable.auth.signInWithOAuth("google", {
-        redirect_uri: window.location.origin,
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          redirectTo: window.location.origin,
+        },
       });
       if (error) {
         toast({ title: "Google sign-in failed", description: error.message, variant: "destructive" });
@@ -82,7 +84,8 @@ export const AuthModal = ({ open, onOpenChange }: AuthModalProps) => {
       toast({ title: "Welcome back!", description: "You have been signed in successfully." });
       onOpenChange(false);
       setEmail(""); setPassword("");
-      navigate("/deriv-app");
+      const next = new URLSearchParams(window.location.search).get("next");
+      navigate(next || "/dashboard");
     }
     setLoading(false);
   };

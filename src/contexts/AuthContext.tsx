@@ -197,14 +197,23 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   const signUp = async (email: string, password: string, country?: string, whatsapp?: string, planCode?: string, displayName?: string) => {
-    const { data, error } = await supabase.auth.signUp({
+    try {
+      const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
         emailRedirectTo: window.location.origin,
         data: { country: country || undefined, selected_plan: planCode || "free", display_name: displayName || undefined },
       },
-    });
+      });
+
+      if (error) {
+        console.error("[Botvio Auth] signUp failed", {
+          message: error.message,
+          status: error.status,
+          name: error.name,
+        });
+      }
 
     // Update profile with country, whatsapp, and display name if provided
     if (!error && data?.user) {
@@ -262,15 +271,33 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       }).catch(() => {});
     }
 
-    return { error };
+      return { error };
+    } catch (caught) {
+      const error = caught instanceof Error ? caught : new Error(String(caught));
+      console.error("[Botvio Auth] signUp exception", error);
+      return { error };
+    }
   };
 
   const signIn = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-    return { error };
+    try {
+      const { error } = await supabase.auth.signInWithPassword({
+        email: email.trim().toLowerCase(),
+        password,
+      });
+      if (error) {
+        console.error("[Botvio Auth] signInWithPassword failed", {
+          message: error.message,
+          status: error.status,
+          name: error.name,
+        });
+      }
+      return { error };
+    } catch (caught) {
+      const error = caught instanceof Error ? caught : new Error(String(caught));
+      console.error("[Botvio Auth] signInWithPassword exception", error);
+      return { error };
+    }
   };
 
   const signOut = async () => {

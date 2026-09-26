@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { getDerivConfig } from "@/config/derivEnv";
-import { getStoredCodeVerifier, getStoredOAuthState, clearPKCEStorage } from "@/lib/derivAuth";
+import { clearPKCEStorage } from "@/lib/derivAuth";
 import { Loader2, CheckCircle, XCircle, RefreshCw } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";

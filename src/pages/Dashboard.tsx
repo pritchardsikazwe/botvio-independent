@@ -1,4 +1,5 @@
 import { useAuth } from "@/contexts/AuthContext";
+import { useDeriv } from "@/contexts/DerivContext";
 import { useBotInstances, useMyCopySubscriptions, useTradingAccounts, useMySubscription, useNotifications } from "@/hooks/useBotvio";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
@@ -14,6 +15,7 @@ import { SEOHead } from "@/components/seo/SEOHead";
 
 const Dashboard = () => {
   const { user } = useAuth();
+  const { derivTokens, isDerivReady, balance } = useDeriv();
   const navigate = useNavigate();
   const { data: botInstances, isLoading: botsLoading } = useBotInstances();
   const { data: subscriptions, isLoading: subsLoading } = useMyCopySubscriptions();
@@ -23,7 +25,7 @@ const Dashboard = () => {
 
   const activeBots = botInstances?.filter(b => b.status === "active").length || 0;
   const activeSubscriptions = subscriptions?.filter(s => s.status === "active").length || 0;
-  const connectedAccounts = accounts?.length || 0;
+  const connectedAccounts = Math.max(accounts?.length || 0, derivTokens.length);
   const unreadNotifications = notifications?.filter(n => !n.is_read).length || 0;
 
   // Fetch real today's P&L from executions
@@ -132,6 +134,9 @@ const Dashboard = () => {
                 <Skeleton className="h-8 w-16" />
               ) : (
                 <div className="text-2xl font-bold">{connectedAccounts}</div>
+                {isDerivReady && balance && (
+                  <p className="text-xs text-success mt-1">Deriv connected • {balance.balance.toFixed(2)} {balance.currency}</p>
+                )}
               )}
               <p className="text-xs text-muted-foreground">
                 Deriv & Binance

@@ -111,13 +111,17 @@ export const HomeChartAnalyzer = () => {
       const { data: urlData } = supabase.storage.from("charts").getPublicUrl(up.path);
 
       setBusy("analyzing");
-      // The independent Botvio Supabase project intentionally has no Edge Functions.
-      // Do not call supabase.functions.invoke() from the browser.
-      // AI image analysis will be enabled once a server-side AI provider is configured.
-      void urlData;
-      setBusy("idle");
-      toast.info("Chart uploaded. AI image analysis is temporarily unavailable while the independent server-side AI service is being configured.");
-      return;
+      const { data: analysisData, error: analysisError } = await supabase.functions.invoke("analyze-chart", {
+        body: { imageUrl: urlData.publicUrl, analysisType: "full" },
+      });
+
+      if (analysisError) throw analysisError;
+      if (!analysisData?.structured) throw new Error("AI returned no structured chart analysis.");
+
+      const structured = analysisData.structured as Structured;
+      setResult(interpretAnalysis(analysisData.analysis || structured.raw_analysis || "", structured));
+      setSummary(analysisData.analysis || structured.raw_analysis || "");
+      toast.success("Chart analyzed successfully!");
     } catch (e: any) {
       toast.error(e?.message || "Could not analyze that chart. Please try again.");
     } finally {

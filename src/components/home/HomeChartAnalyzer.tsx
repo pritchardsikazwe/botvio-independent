@@ -1,7 +1,6 @@
 import { useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { readFunctionError } from "@/lib/chartAnalysisError";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
@@ -112,19 +111,13 @@ export const HomeChartAnalyzer = () => {
       const { data: urlData } = supabase.storage.from("charts").getPublicUrl(up.path);
 
       setBusy("analyzing");
-      const { data, error } = await supabase.functions.invoke("analyze-chart", {
-        body: { imageUrl: urlData.publicUrl, analysisType: "full" },
-      });
-      if (error) {
-        const parsed = await readFunctionError(error);
-        throw new Error(parsed.message);
-      }
-      if (data?.error) throw new Error(data.error);
-
-      const structured: Structured = data.structured || {};
-      setResult(interpretAnalysis(data.analysis || "", structured));
-      setSummary((data.analysis || "").replace(/[#*`]/g, "").trim().slice(0, 420));
-      toast.success("Chart analyzed");
+      // The independent Botvio Supabase project intentionally has no Edge Functions.
+      // Do not call supabase.functions.invoke() from the browser.
+      // AI image analysis will be enabled once a server-side AI provider is configured.
+      void urlData;
+      setBusy("idle");
+      toast.info("Chart uploaded. AI image analysis is temporarily unavailable while the independent server-side AI service is being configured.");
+      return;
     } catch (e: any) {
       toast.error(e?.message || "Could not analyze that chart. Please try again.");
     } finally {

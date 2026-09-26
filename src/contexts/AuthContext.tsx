@@ -8,15 +8,16 @@ interface Profile {
   email: string | null;
   display_name: string | null;
   avatar_url: string | null;
+  country: string | null;
 }
 
 interface UserSettings {
   id: string;
   user_id: string;
-  default_pair: string;
-  default_timeframe: string;
-  notifications_enabled: boolean;
-  risk_per_trade: number;
+  default_pair: string | null;
+  default_timeframe: string | null;
+  notifications_enabled: boolean | null;
+  risk_per_trade: number | null;
 }
 
 type AppRole = 'admin' | 'super_admin' | 'moderator' | 'user' | 'affiliate' | 'signal_manager';
@@ -201,15 +202,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       password,
       options: {
         emailRedirectTo: window.location.origin,
-        data: { country: country || undefined, whatsapp_number: whatsapp || undefined, selected_plan: planCode || 'free', display_name: displayName || undefined },
+        data: { country: country || undefined, selected_plan: planCode || "free", display_name: displayName || undefined },
       },
     });
 
     // Update profile with country, whatsapp, and display name if provided
     if (!error && data?.user) {
-      const updates: Record<string, string> = {};
+      const updates: { country?: string; display_name?: string } = {};
       if (country) updates.country = country;
-      if (whatsapp) updates.whatsapp_number = whatsapp;
       if (displayName) updates.display_name = displayName;
       if (Object.keys(updates).length > 0) {
         supabase

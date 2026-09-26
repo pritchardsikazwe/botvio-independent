@@ -218,7 +218,19 @@ export const ChartUpload = ({ isPremium = false }: ChartUploadProps) => {
         body: { imageUrl, symbol, timeframe, analysisType },
       });
 
-      if (analysisError) throw analysisError;
+      if (analysisError) {
+        let serverMessage = analysisError.message || "Edge Function request failed.";
+        try {
+          const response = (analysisError as any).context;
+          if (response && typeof response.json === "function") {
+            const payload = await response.json();
+            serverMessage = payload?.error || payload?.message || serverMessage;
+          }
+        } catch {
+          // Keep the original FunctionsHttpError message when the response body is unavailable.
+        }
+        throw new Error(serverMessage);
+      }
       if (!analysisData?.structured) throw new Error("AI returned no structured chart analysis.");
 
       setAnalysisResult(analysisData.analysis || analysisData.structured.analysis || "");

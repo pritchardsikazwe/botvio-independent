@@ -15,10 +15,10 @@ import {
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { getDerivConfig, resolveDerivEnv } from "@/config/derivEnv";
-import { startDerivOAuthLogin, setDerivSessionToken } from "@/lib/derivAuth";
+import { setDerivSessionToken } from "@/lib/derivAuth";
 import { useOAuthCooldown } from "@/hooks/useOAuthCooldown";
 import { useDerivTokens } from "@/hooks/useDerivTokens";
-import { normalizeDerivError } from "@/lib/derivErrors";
+
 
 interface DerivConnectionPanelProps {
   onConnected?: (balance: any) => void;
@@ -27,10 +27,10 @@ interface DerivConnectionPanelProps {
 
 export const DerivConnectionPanel = ({ onConnected, showAccountSelection = true }: DerivConnectionPanelProps) => {
   const { user } = useAuth();
-  const { connected, authorized, balance, error, loading, connect, disconnect } = useDeriv();
-  const { upsertToken: upsertDerivToken } = useDerivTokens();
+  const { connected, authorized, balance, error, loading, connect, disconnect, refreshDerivConnection } = useDeriv();
+  
 
-  const [connectionMethod, setConnectionMethod] = useState<"token" | "oauth">("oauth");
+  const [connectionMethod, setConnectionMethod] = useState<"token" | "oauth">("token");
   const [apiToken, setApiToken] = useState("");
   const [isConnecting, setIsConnecting] = useState(false);
   const [isVerifying, setIsVerifying] = useState(false);
@@ -76,75 +76,41 @@ export const DerivConnectionPanel = ({ onConnected, showAccountSelection = true 
 
     setIsVerifying(true);
     try {
-      const { data, error: fnError } = await supabase.functions.invoke("deriv-verify-token", {
-        body: { token: apiToken, env: currentEnv },
-      });
-      if (fnError || !data?.ok) {
-        toast.error(
-          normalizeDerivError(data?.error || fnError?.message) ||
-            "Verification failed. Make sure you pasted a new Personal Access Token (PAT) from Deriv.",
-        );
-        return;
-      }
-      toast.success(`PAT verified! Account: ${data.loginid}`);
-      // Persist the verified credential so the ONE global Deriv connection store
-      // can authorize now and re-authorize after a browser refresh.
-      setDerivSessionToken(apiToken);
-      const { data: conn } = await supabase
-        .from("deriv_connections")
-        .select("*")
-        .eq("user_id", user?.id)
-        .eq("env", currentEnv)
-        .single();
-      setStoredConnection(conn);
+      // No Supabase Edge Function is required for PAT connections.
+      // The Deriv WebSocket client performs the live authorization directly.
+      const connectedBalance = await connect(apiToken.trim());
+      setDerivSessionToken(apiToken.trim());
 
-      // Save to trading_accounts (replaces the old WS-based connect which
-      // does not accept PATs). The new Deriv REST API is invoked server-side.
-      if (saveToAccount && user) {
-        setIsSaving(true);
-        const label = accountLabel || `Deriv ${data.loginid}`;
+      if (user) {
+        const label = accountLabel || `Deriv ${connectedBalance.loginid}`;
         const { error: saveError } = await supabase.from("trading_accounts").insert({
           user_id: user.id,
           broker: "deriv",
           label,
-          api_key_encrypted: apiToken,
-          login_id: data.loginid,
+          api_key_encrypted: "session-active",
+          api_secret_encrypted: null,
+          login_id: connectedBalance.loginid,
           connection_type: "pat",
           connection_status: "connected",
-          is_virtual: !!data.is_virtual,
+          is_virtual: connectedBalance.loginid?.startsWith("VRTC") ?? false,
         });
         if (saveError) {
-          console.error("Failed to save account:", saveError);
-          toast.error("Verified but failed to save account");
-        } else {
-          toast.success("Account saved for future use");
+          console.warn("Connection metadata was not saved:", saveError.message);
         }
-
-        // Register in user_deriv_tokens so the account appears in the
-        // multi-account switcher and can be set as the active trading account
-        // for the bot. Marking it active here also deactivates any other token.
-        try {
-          await upsertDerivToken({
-            loginid: data.loginid,
-            is_virtual: !!data.is_virtual,
-            currency: data.currency || "USD",
-            token_encrypted: apiToken,
-            label,
-          });
-          toast.success(`${data.loginid} is now your active trading account`);
-        } catch (e: any) {
-          console.error("Failed to register active token:", e);
-        }
-        setIsSaving(false);
       }
-      onConnected?.({ loginid: data.loginid, balance: data.balance, currency: data.currency });
+
+      toast.success(`Deriv connected: ${connectedBalance.loginid}`);
+      onConnected?.({
+        loginid: connectedBalance.loginid,
+        balance: connectedBalance.balance,
+        currency: connectedBalance.currency,
+      });
     } catch (e: any) {
-      toast.error(e.message || "Verification failed");
+      toast.error(e?.message || "Deriv connection failed. Check the PAT and try again.");
     } finally {
       setIsVerifying(false);
     }
   };
-
   const handleOAuthConnect = () => {
     // Mutex + cooldown check
     if (!canLogin) {
@@ -188,37 +154,25 @@ export const DerivConnectionPanel = ({ onConnected, showAccountSelection = true 
     if (!user) return;
     setIsVerifying(true);
     try {
-      const { data, error: fnError } = await supabase.functions.invoke("deriv-health-check", {
-        body: { env: currentEnv },
-      });
-      if (fnError || !data?.ok) {
-        if (data?.code === "NO_CONNECTION") {
-          toast.warning("No saved connection. Please verify your token first.");
-        } else {
-          toast.error(normalizeDerivError(data?.error || fnError?.message) || "Health check failed");
-        }
-        return;
-      }
-      const result = data.results?.[0];
-      if (result?.is_connected) {
+      const ok = await refreshDerivConnection();
+      if (ok) {
         toast.success("Connection is healthy!");
       } else {
-        toast.warning(result?.last_error ? normalizeDerivError(result.last_error) : "Connection needs re-verification");
+        toast.warning("Connection needs re-verification. Please reconnect your Deriv PAT.");
       }
       const { data: conn } = await supabase
         .from("deriv_connections")
         .select("*")
         .eq("user_id", user.id)
         .eq("env", currentEnv)
-        .single();
+        .maybeSingle();
       setStoredConnection(conn);
     } catch (e: any) {
-      toast.error(e.message || "Health check failed");
+      toast.error(e?.message || "Health check failed");
     } finally {
       setIsVerifying(false);
     }
   };
-
   const getConnectionStatus = () => {
     if (loading || isConnecting || isVerifying) return "connecting";
     if (authorized && connected) return "connected";
@@ -228,12 +182,8 @@ export const DerivConnectionPanel = ({ onConnected, showAccountSelection = true 
   };
 
   const status = getConnectionStatus();
-  const oauthButtonDisabled = !canLogin;
-  const oauthButtonText = loginInProgress
-    ? "Logging in..."
-    : cooldownRemaining > 0
-    ? `Wait ${cooldownRemaining}s before retrying`
-    : "Continue with Deriv";
+  const oauthButtonDisabled = true;
+  const oauthButtonText = "OAuth temporarily unavailable";
 
   return (
     <Card className="glass-card">
@@ -352,8 +302,8 @@ export const DerivConnectionPanel = ({ onConnected, showAccountSelection = true 
                 <TabsTrigger value="oauth" className="flex items-center gap-2">
                   <User className="h-4 w-4" />
                   Deriv Login
-                  <Badge variant="secondary" className="ml-1 text-[10px] px-1.5 py-0">
-                    Recommended
+                  <Badge variant="outline" className="ml-1 text-[10px] px-1.5 py-0">
+                    Server setup required
                   </Badge>
                 </TabsTrigger>
                 <TabsTrigger value="token" className="flex items-center gap-2">
@@ -374,7 +324,7 @@ export const DerivConnectionPanel = ({ onConnected, showAccountSelection = true 
                     disabled={isConnecting || isVerifying}
                   />
                   <p className="text-xs text-muted-foreground">
-                    Your PAT is checked against Deriv&apos;s new REST API before it is saved.
+                    Your PAT is authorized directly by the Botvio Deriv client and kept only for the current browser session.
                   </p>
                 </div>
 
@@ -399,7 +349,7 @@ export const DerivConnectionPanel = ({ onConnected, showAccountSelection = true 
                         className="rounded"
                       />
                       <Label htmlFor="save_account" className="text-sm cursor-pointer">
-                        Save account for future sessions
+                        Save account metadata (credential stays session-only)
                       </Label>
                     </div>
                   </>
@@ -495,7 +445,7 @@ export const DerivConnectionPanel = ({ onConnected, showAccountSelection = true 
 
                 <Button
                   className="w-full"
-                  onClick={handleOAuthConnect}
+                  onClick={() => toast.info("OAuth requires a server-side token exchange. Use PAT connection for now.")}
                   disabled={oauthButtonDisabled}
                 >
                   {loginInProgress ? (

@@ -1,34 +1,34 @@
-# Botvio Agent Authentication
+# Botvio Authentication
 
-Botvio uses OAuth 2.0 / OpenID Connect for agent authentication, backed by our
-managed identity provider.
+The independent Botvio application uses Supabase Auth directly.
 
-## Discovery
+## Supabase project
 
-- Authorization server metadata: <https://botvio.live/.well-known/oauth-authorization-server>
-- Protected resource metadata: <https://botvio.live/.well-known/oauth-protected-resource>
-- JWKS: <https://tqqkzeblmjapgbnsbtgw.supabase.co/auth/v1/.well-known/jwks.json>
+- Project URL: https://bkygpojmlxcikhbuqgmv.supabase.co
+- Auth issuer: https://bkygpojmlxcikhbuqgmv.supabase.co/auth/v1
 
-## Issuer
+## Browser configuration
 
-`https://tqqkzeblmjapgbnsbtgw.supabase.co/auth/v1`
+The frontend uses:
 
-## Agent registration
+- VITE_SUPABASE_URL
+- VITE_SUPABASE_PUBLISHABLE_KEY
 
-Agents that want to act on behalf of a Botvio user must:
+Only the publishable/anon key belongs in the browser. Never expose a Supabase service-role key in frontend code.
 
-1. Direct the user to the authorization endpoint with `response_type=code`,
-   `code_challenge_method=S256`, and the desired scopes (`openid email profile`).
-2. Exchange the returned authorization code at the token endpoint using PKCE.
-3. Present the resulting access token as `Authorization: Bearer <token>` when
-   calling Botvio APIs or the Botvio MCP server at
-   `https://tqqkzeblmjapgbnsbtgw.supabase.co/functions/v1/mcp`.
+## Authentication flows
 
-## Supported grant types
+- Email/password sign up
+- Email/password sign in
+- Persistent sessions
+- Automatic token refresh
+- Password reset
+- Protected application routes
+- Supabase auth state change handling
 
-- `authorization_code` (with PKCE) — recommended for agents
-- `refresh_token`
+The independent application stores its browser session locally and does not depend on Lovable preview authentication.
 
-## Contact
+## Production security
 
-For agent onboarding or elevated scopes, contact <info@botvio.live>.
+Authentication is only one layer of security. Sensitive tables must remain protected by Supabase Row Level Security (RLS), and privileged operations should be performed through trusted server-side/Edge Function code.
+

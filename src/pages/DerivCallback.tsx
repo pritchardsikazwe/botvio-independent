@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
 import { getDerivConfig } from "@/config/derivEnv";
-import { setDerivOAuthToken, getStoredCodeVerifier, getStoredOAuthState, clearPKCEStorage } from "@/lib/derivAuth";
+import { getStoredCodeVerifier, getStoredOAuthState, clearPKCEStorage } from "@/lib/derivAuth";
 import { Loader2, CheckCircle, XCircle, RefreshCw } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -20,104 +19,10 @@ export default function DerivCallbackPage() {
   const { user } = useAuth();
 
   useEffect(() => {
-    const handleOAuthCallback = async () => {
-      const code = searchParams.get("code");
-      const state = searchParams.get("state");
-      const error = searchParams.get("error");
-      const errorDescription = searchParams.get("error_description");
-
-      if (error) {
-        setStatus("error");
-        setMessage(`OAuth error: ${errorDescription || error}`);
-        clearPKCEStorage();
-        return;
-      }
-
-      if (!code) {
-        setStatus("error");
-        setMessage("Missing authorization code. Please try again.");
-        clearPKCEStorage();
-        return;
-      }
-
-      // Verify CSRF state
-      const storedState = getStoredOAuthState();
-      if (storedState && state !== storedState) {
-        setStatus("error");
-        setMessage("Security verification failed (state mismatch). Please try again.");
-        clearPKCEStorage();
-        return;
-      }
-
-      // Get the stored code_verifier for PKCE
-      const codeVerifier = getStoredCodeVerifier();
-      if (!codeVerifier) {
-        setStatus("error");
-        setMessage("PKCE verification data not found. Please try logging in again.");
-        clearPKCEStorage();
-        return;
-      }
-
-      // Check if user is authenticated with Botvio
-      const { data: sessionData } = await supabase.auth.getSession();
-      if (!sessionData?.session?.user) {
-        setStatus("error");
-        setMessage("Please log in to your Botvio account first, then reconnect Deriv.");
-        // Don't clear PKCE yet — user might log in and come back
-        return;
-      }
-
-      try {
-        const cfg = getDerivConfig();
-
-        setMessage("Exchanging authorization code...");
-
-        // Exchange code for token via our edge function (server-side PKCE exchange)
-        const { data, error: fnError } = await supabase.functions.invoke("deriv-oauth-exchange", {
-          body: {
-            code,
-            code_verifier: codeVerifier,
-            env: cfg.env,
-            redirectUrl: cfg.redirectUrl,
-          },
-        });
-
-        // Clear PKCE storage immediately after exchange attempt
-        clearPKCEStorage();
-
-        if (fnError || !data?.ok) {
-          setStatus("error");
-          setMessage(`OAuth failed: ${data?.error || fnError?.message || "Unknown error"}`);
-          localStorage.setItem(RETRY_COOLDOWN_KEY, (Date.now() + 60000).toString());
-          return;
-        }
-
-        // Store the access token locally for WebSocket usage
-        if (data.token) {
-          setDerivOAuthToken(data.token);
-        }
-
-        setStatus("success");
-        setMessage("Connected to Deriv successfully!");
-        console.log("[LOGIN SUCCESS] OAuth v2 code exchange completed");
-
-        // Clear cooldowns on success
-        localStorage.removeItem(RETRY_COOLDOWN_KEY);
-        localStorage.removeItem(OAUTH_COOLDOWN_KEY);
-
-        setTimeout(() => {
-          navigate("/connections?oauth=complete");
-        }, 2000);
-      } catch (err: any) {
-        clearPKCEStorage();
-        setStatus("error");
-        setMessage(`Connection failed: ${err.message}`);
-        localStorage.setItem(RETRY_COOLDOWN_KEY, (Date.now() + 60000).toString());
-      }
-    };
-
-    handleOAuthCallback();
-  }, [searchParams, navigate, user]);
+    setStatus("error");
+    setMessage("Deriv OAuth is temporarily disabled because Botvio has no server-side token exchange configured. Return to Connections and use a Deriv PAT to connect.");
+    clearPKCEStorage();
+  }, []);
 
   // Retry countdown timer
   useEffect(() => {

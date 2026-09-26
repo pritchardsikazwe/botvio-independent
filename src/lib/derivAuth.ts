@@ -54,17 +54,17 @@ export async function startDerivOAuthLogin() {
 // ─── Token Storage ──────────────────────────────────────────────────────────
 
 export function getDerivOAuthToken(): string | null {
-  return localStorage.getItem("deriv_oauth_token");
+  return sessionStorage.getItem("deriv_oauth_token");
 }
 
 export function setDerivOAuthToken(token: string): void {
-  localStorage.setItem("deriv_oauth_token", token);
+  sessionStorage.setItem("deriv_oauth_token", token);
   // Tell DerivProvider to (re)authorize immediately — no logout/login required.
   window.dispatchEvent(new CustomEvent("deriv:token-updated", { detail: { token } }));
 }
 
 export function clearDerivOAuthToken(): void {
-  localStorage.removeItem("deriv_oauth_token");
+  sessionStorage.removeItem("deriv_oauth_token");
   window.dispatchEvent(new CustomEvent("deriv:token-cleared"));
 }
 
@@ -73,8 +73,8 @@ export function clearDerivOAuthToken(): void {
 /** Any Deriv credential the app can re-authorize with (PAT or OAuth token). */
 export function getStoredDerivToken(): string | null {
   const t =
-    localStorage.getItem("deriv_pat_token") ||
-    localStorage.getItem("deriv_oauth_token");
+    sessionStorage.getItem("deriv_pat_token") ||
+    sessionStorage.getItem("deriv_oauth_token");
   return t && t.length >= 10 ? t : null;
 }
 
@@ -84,13 +84,13 @@ export function getStoredDerivToken(): string | null {
  */
 export function setDerivSessionToken(token: string): void {
   if (!token || token.length < 10) return;
-  localStorage.setItem("deriv_pat_token", token);
+  sessionStorage.setItem("deriv_pat_token", token);
   window.dispatchEvent(new CustomEvent("deriv:token-updated", { detail: { token } }));
 }
 
 export function clearDerivSessionToken(): void {
-  localStorage.removeItem("deriv_pat_token");
-  localStorage.removeItem("deriv_oauth_token");
+  sessionStorage.removeItem("deriv_pat_token");
+  sessionStorage.removeItem("deriv_oauth_token");
   window.dispatchEvent(new CustomEvent("deriv:token-cleared"));
 }
 

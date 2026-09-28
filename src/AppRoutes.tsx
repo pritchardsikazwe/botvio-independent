@@ -13,6 +13,7 @@ const Paid = ({ children }: { children: ReactNode }) => (
 
 import Index from "./pages/Index";
 import HomeMockup from "./pages/HomeMockup";
+import StartTrading from "./pages/StartTrading";
 import Landing from "./pages/Landing";
 import Install from "./pages/Install";
 import Learn from "./pages/Learn";
@@ -166,6 +167,8 @@ export const AppRoutes = () => (
   <Routes>
     <Route path="/" element={<HomeMockup />} />
     <Route path="home-preview" element={<HomeMockup />} />
+    <Route path="start" element={<StartTrading />} />
+    <Route path="start-here" element={<Navigate to="/start" replace />} />
     <Route path="home-classic" element={<Index />} />
     <Route path=".lovable/oauth/consent" element={<OAuthConsent />} />
     <Route path="landing" element={<Landing />} />

@@ -8,6 +8,7 @@ const corsHeaders = {
 };
 
 const BRIDGE_SHARED_SECRET = Deno.env.get("BRIDGE_SHARED_SECRET");
+const MAX_TICKS_PER_REQUEST = 20;
 
 interface IncomingTick {
   symbol: string;
@@ -51,9 +52,11 @@ serve(async (req) => {
       );
     }
 
-    // Keep this endpoint lightweight: older EA builds could push every symbol
-    // every few seconds, which starved auth/admin and command polling.
-    const capped = ticks.slice(0, 4);
+    // The Bridge EA can send the configured Weltrade symbols in one request.
+    // Keep a bounded cap while allowing every selected SyntX symbol to refresh
+    // within the chart's freshness window.
+    const capped = ticks.slice(0, MAX_TICKS_PER_REQUEST);
+
     const rows = capped
       .filter((t) => t && typeof t.symbol === "string" && t.symbol.length > 0)
       .map((t) => ({

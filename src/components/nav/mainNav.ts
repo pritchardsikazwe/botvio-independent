@@ -40,8 +40,8 @@ export interface NavGroup {
 }
 
 /**
- * Primary desktop navigation — the seven Botvio pillars plus Blog.
- * Markets · Signals · Trade · Copy Trading · AI · Tools · Learn
+ * Primary desktop navigation — the core user jobs.
+ * Markets · Signals · Trade · Copy Trading · AI · Learn
  */
 export const PRIMARY_NAV: NavGroup[] = [
   {
@@ -114,19 +114,8 @@ export const PRIMARY_NAV: NavGroup[] = [
       { label: "AI Signal Analysis", to: "/authority-signals", icon: Sparkles },
       { label: "Market Scanner", to: "/market-analysis", icon: ScanSearch },
       { label: "Strategies", to: "/strategies", icon: Layers },
-    ],
-  },
-  {
-    label: "Tools",
-    icon: Wrench,
-    to: "/tools",
-    items: [
-      { label: "All Trading Tools", to: "/tools", icon: Wrench, description: "Calculators, sessions & calendar" },
-      { label: "Economic Calendar", to: "/news-calendar", icon: Newspaper },
-      { label: "Trade Modes", to: "/trade-modes", icon: Calculator },
-      { label: "Flipping Challenges", to: "/flipping-challenges", icon: Zap },
-      { label: "Marketplace", to: "/marketplace", icon: Layers },
-      { label: "Performance Transparency", to: "/performance-transparency", icon: BarChart3 },
+      { label: "Trading Tools", to: "/tools", icon: Wrench },
+      { label: "Blog & Research", to: "/blog", icon: Newspaper },
     ],
   },
   {
@@ -142,11 +131,7 @@ export const PRIMARY_NAV: NavGroup[] = [
       { label: "Docs", to: "/docs", icon: BookOpen },
     ],
   },
-  {
-    label: "Blog",
-    icon: Newspaper,
-    to: "/blog",
-  },
+
 ];
 
 
@@ -155,6 +140,7 @@ export const MORE_NAV: { label: string; items: NavItem[] }[] = [
   {
     label: "Platform",
     items: [
+      { label: "Copy Trading", to: "/copy-trading", icon: Users },
       { label: "Brokers", to: "/brokers", icon: Shield },
       { label: "Strategies", to: "/strategies", icon: Layers },
       { label: "Marketplace", to: "/marketplace", icon: Layers },

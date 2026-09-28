@@ -41,12 +41,12 @@ function getMarketStatus(key: RegionKey): { isOpen: boolean; session: string } {
 }
 
 const BASE_REGIONS: Array<{ key: RegionKey; emoji: string; name: string; path: string; desc: string; indices: string[]; sentiment: number; trend: string }> = [
-  { key: "us", emoji: "🇺🇸", name: "U.S. Market", path: "/markets/us", desc: "S&P 500, Nasdaq, Dow, Gold, Oil", indices: ["SPX +0.58%", "NAS +0.92%", "DJI +0.27%"], sentiment: 62, trend: "Bullish" },
-  { key: "europe", emoji: "🇪🇺", name: "Europe Market", path: "/markets/europe", desc: "DAX, FTSE 100, CAC 40, EUR/USD", indices: ["DAX +0.34%", "FTSE -0.12%", "CAC +0.48%"], sentiment: 55, trend: "Mixed" },
-  { key: "middleEast", emoji: "🇸🇦", name: "Middle East", path: "/markets/middle-east", desc: "Tadawul, DFM, Aramco, Al Rajhi", indices: ["TASI +0.75%", "DFM +0.90%", "OIL -0.85%"], sentiment: 68, trend: "Bullish" },
-  { key: "asia", emoji: "🌏", name: "Asia Market", path: "/markets/asia", desc: "Nikkei, Hang Seng, ASX, USD/JPY", indices: ["NKY -0.45%", "HSI +0.22%", "ASX +0.35%"], sentiment: 50, trend: "Cautious" },
-  { key: "crypto", emoji: "₿", name: "Crypto Market", path: "/markets/crypto", desc: "Bitcoin, Ethereum, Solana, BNB", indices: ["BTC +3.20%", "ETH +2.45%", "SOL +6.10%"], sentiment: 74, trend: "Bullish" },
-  { key: "africa", emoji: "🌍", name: "Africa Market", path: "/markets/africa", desc: "JSE, NGX, LuSE — SA, Nigeria, Zambia", indices: ["JSE +0.85%", "NGX +1.40%", "LuSE +0.55%"], sentiment: 67, trend: "Bullish" },
+  { key: "us", emoji: "🇺🇸", name: "U.S. Market", path: "/markets/us", desc: "S&P 500, Nasdaq, Dow, Gold, Oil", indices: [], sentiment: 0, trend: "Live feed" },
+  { key: "europe", emoji: "🇪🇺", name: "Europe Market", path: "/markets/europe", desc: "DAX, FTSE 100, CAC 40, EUR/USD", indices: [], sentiment: 0, trend: "Live feed" },
+  { key: "middleEast", emoji: "🇸🇦", name: "Middle East", path: "/markets/middle-east", desc: "Tadawul, DFM, Aramco, Al Rajhi", indices: [], sentiment: 0, trend: "Live feed" },
+  { key: "asia", emoji: "🌏", name: "Asia Market", path: "/markets/asia", desc: "Nikkei, Hang Seng, ASX, USD/JPY", indices: [], sentiment: 0, trend: "Live feed" },
+  { key: "crypto", emoji: "₿", name: "Crypto Market", path: "/markets/crypto", desc: "Bitcoin, Ethereum, Solana, BNB", indices: [], sentiment: 0, trend: "Live feed" },
+  { key: "africa", emoji: "🌍", name: "Africa Market", path: "/markets/africa", desc: "JSE, NGX, LuSE — SA, Nigeria, Zambia", indices: [], sentiment: 0, trend: "Live feed" },
 ];
 
 const REGIONS = BASE_REGIONS.map((r) => {
@@ -225,7 +225,7 @@ const GlobalMarkets = () => {
           features={[
             { icon: Globe, label: "6 regions", sub: "US, EU, ME, Asia, Crypto, Africa" },
             { icon: Activity, label: "Live sessions", sub: "Open/closed status in UTC" },
-            { icon: Zap, label: "AI signals", sub: "Botvio AI bias per market" },
+            { icon: Zap, label: "Live signals", sub: "Open the signal feed for current setups" },
             { icon: Clock, label: "Event risk", sub: "High-impact calendar focus" },
           ]}
           stats={REGIONS.slice(0, 4).map((r) => ({
@@ -471,48 +471,29 @@ const GlobalMarkets = () => {
               </CardContent>
             </Card>
 
-            {/* Opportunity Radar */}
-            <Card className="border-primary/30 animate-fade-in">
+            <Card className="border-primary/20 bg-primary/5 animate-fade-in">
               <CardContent className="p-4">
-                <h2 className="text-sm font-extrabold text-foreground mb-3">🎯 Opportunity Radar — Top Trades This Week</h2>
-                <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
-                  {[
-                    { name: "Gold", dir: "BUY", c: "89%", reason: "CPI play + safe-haven demand" },
-                    { name: "Nasdaq", dir: "BUY", c: "84%", reason: "Tech momentum pre-earnings" },
-                    { name: "GBP/USD", dir: "BUY", c: "76%", reason: "USD weakness if CPI soft" },
-                    { name: "EUR/USD", dir: "BUY", c: "73%", reason: "Dovish Fed pivot bets rising" },
-                    { name: "Bitcoin", dir: "BUY", c: "88%", reason: "Risk-on + ETF inflows strong" },
-                  ].map((t) => (
-                    <div key={t.name} className={`p-3 rounded-lg text-center ${t.dir === "BUY" ? "bg-success/10 border border-success/20" : "bg-destructive/10 border border-destructive/20"}`}>
-                      <p className="font-bold text-foreground text-sm">{t.name}</p>
-                      <p className={`text-xs font-extrabold ${t.dir === "BUY" ? "text-success" : "text-destructive"}`}>{t.dir}</p>
-                      <p className="text-[10px] text-muted-foreground mt-1">Conf: {t.c}</p>
-                      <p className="text-[9px] text-muted-foreground">{t.reason}</p>
-                    </div>
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                  <div>
+                    <h2 className="text-sm font-extrabold">Current opportunities</h2>
+                    <p className="mt-1 text-xs text-muted-foreground">Botvio does not publish a static weekly winner list. Open the live signal feed to review current setups, timestamps and risk context.</p>
+                  </div>
+                  <Button size="sm" asChild><Link to="/signals">Open live signals <ArrowRight className="ml-1 h-3 w-3" /></Link></Button>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="border-border/60 animate-fade-in">
+              <CardContent className="p-4">
+                <h2 className="text-sm font-extrabold">Global trading checklist</h2>
+                <div className="mt-3 grid gap-2 sm:grid-cols-2">
+                  {["Check whether the relevant market is open.", "Review the live signal timestamp and timeframe.", "Confirm the broker actually lists the instrument.", "Use a stop-loss and size positions for your own risk.", "Re-check high-impact events before execution.", "Treat Botvio analysis as research, not a guarantee."].map((item) => (
+                    <div key={item} className="rounded-lg bg-secondary/50 p-3 text-xs text-muted-foreground">{item}</div>
                   ))}
                 </div>
               </CardContent>
             </Card>
 
-            {/* Global Trading Tips */}
-            <TradingTipsCard
-              title="Global Market Do's & Don'ts — This Week"
-              dos={[
-                "Focus on CPI Wednesday — it's THE event of the week",
-                "Use FOMC Minutes for clues on June rate decision",
-                "Check Gold momentum — safe-haven flows rising with geopolitical tension",
-                "Trade during peak London/NY overlap for best liquidity",
-                "Position for Q2 earnings season starting next week",
-              ]}
-              donts={[
-                "Don't hold large USD positions through CPI release",
-                "Don't ignore PPI Thursday — upstream inflation matters",
-                "Avoid overleveraging ahead of FOMC Minutes release",
-                "Don't fight the trend if CPI surprises — it moves fast",
-                "Never risk more than 1-2% on a single news-driven trade",
-              ]}
-              proTip="CPI Wednesday is the main event. If inflation comes in soft, expect Gold + Tech rally. If hot, USD rips higher and equities sell. Position Mon-Tue, react Wed-Thu."
-            />
           </>
         )}
       </main>

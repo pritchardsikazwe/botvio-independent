@@ -1,5 +1,5 @@
-import { ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 
 const BROKERS = [
   { name: "Deriv", path: "/deriv-options", external: false },
@@ -18,7 +18,7 @@ export function SignalBrokerLinks({ symbol }: { symbol: string }) {
       <div className="flex flex-wrap gap-2">
         {brokers.map((broker) => (
           <Button key={broker.name} size="sm" variant="outline" asChild>
-            <a href={broker.path}>{broker.name}</a>
+            <Link to={broker.path}>{broker.name}</Link>
           </Button>
         ))}
       </div>

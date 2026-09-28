@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
 export interface BridgeTick {
@@ -9,17 +9,16 @@ export interface BridgeTick {
   ts: string;
 }
 
-/**
- * Subscribes to live ticks streamed from the BOTVIO Bridge EA for a single symbol.
- * Returns the latest price + recent history (last N ticks).
- */
+/** Live Weltrade MT5 Bridge feed with bounded history and stale-feed detection. */
 export function useBridgeTicks(symbol: string | null, historyLimit = 300) {
   const [ticks, setTicks] = useState<BridgeTick[]>([]);
   const [latest, setLatest] = useState<BridgeTick | null>(null);
   const [hasFeed, setHasFeed] = useState(false);
+  const latestRef = useRef<BridgeTick | null>(null);
 
   useEffect(() => {
     if (!symbol) {
+      latestRef.current = null;
       setTicks([]);
       setLatest(null);
       setHasFeed(false);
@@ -27,31 +26,43 @@ export function useBridgeTicks(symbol: string | null, historyLimit = 300) {
     }
 
     let cancelled = false;
-
-    // Cap at 800 — enough for ~3-5 min of signal candles while still well below
-    // the backend's row-budget for chart/signal panels.
     const safeHistoryLimit = Math.min(Math.max(historyLimit, 50), 800);
 
-    // 1) Initial backfill
+    const applyLatest = (row: BridgeTick) => {
+      latestRef.current = row;
+      setLatest(row);
+      setHasFeed(Date.now() - new Date(row.ts).getTime() < 60_000);
+    };
+
     (async () => {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from("bridge_ticks")
         .select("symbol,bid,ask,last_price,ts")
         .eq("symbol", symbol)
         .order("ts", { ascending: false })
         .limit(safeHistoryLimit);
+
       if (cancelled) return;
+
+      if (error) {
+        latestRef.current = null;
+        setTicks([]);
+        setLatest(null);
+        setHasFeed(false);
+        return;
+      }
+
       const rows = (data ?? []).reverse() as BridgeTick[];
       setTicks(rows);
       const last = rows[rows.length - 1] ?? null;
-      setLatest(last);
-      // "feed" is considered live if last tick is < 60s old
-      setHasFeed(
-        !!last && Date.now() - new Date(last.ts).getTime() < 60_000,
-      );
+      if (last) applyLatest(last);
+      else {
+        latestRef.current = null;
+        setLatest(null);
+        setHasFeed(false);
+      }
     })();
 
-    // 2) Realtime subscription
     const channel = supabase
       .channel(`bridge-ticks-${symbol}`)
       .on(
@@ -63,9 +74,11 @@ export function useBridgeTicks(symbol: string | null, historyLimit = 300) {
           filter: `symbol=eq.${symbol}`,
         },
         (payload) => {
+          if (cancelled) return;
           const row = payload.new as BridgeTick;
-          setLatest(row);
-          setHasFeed(true);
+          if (!row?.symbol || row.symbol !== symbol || !row.ts) return;
+
+          applyLatest(row);
           setTicks((prev) => {
             const next = [...prev, row];
             return next.length > safeHistoryLimit
@@ -74,22 +87,23 @@ export function useBridgeTicks(symbol: string | null, historyLimit = 300) {
           });
         },
       )
-      .subscribe();
-
-    // 3) Stale-feed watchdog: if no new tick for 60s, mark as offline
-    const watchdog = setInterval(() => {
-      setHasFeed((prev) => {
-        if (!latest) return false;
-        return Date.now() - new Date(latest.ts).getTime() < 60_000;
+      .subscribe((status) => {
+        if (status === "CHANNEL_ERROR" || status === "TIMED_OUT" || status === "CLOSED") {
+          setHasFeed(false);
+        }
       });
+
+    const watchdog = window.setInterval(() => {
+      const row = latestRef.current;
+      setHasFeed(!!row && Date.now() - new Date(row.ts).getTime() < 60_000);
     }, 10_000);
 
     return () => {
       cancelled = true;
+      latestRef.current = null;
       supabase.removeChannel(channel);
-      clearInterval(watchdog);
+      window.clearInterval(watchdog);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [symbol, historyLimit]);
 
   return { ticks, latest, hasFeed };

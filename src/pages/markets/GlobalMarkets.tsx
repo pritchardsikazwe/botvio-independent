@@ -54,16 +54,7 @@ const REGIONS = BASE_REGIONS.map((r) => {
   return { ...r, isOpen: status.isOpen, session: status.session };
 });
 
-const LIVE_MARKET_DATA = [
-  { symbol: "XAU/USD", price: "3,085.20", change: "+1.15%", dir: "up" },
-  { symbol: "EUR/USD", price: "1.0918", change: "+0.28%", dir: "up" },
-  { symbol: "BTC/USD", price: "91,250", change: "+3.20%", dir: "up" },
-  { symbol: "US30", price: "42,540", change: "+0.27%", dir: "up" },
-  { symbol: "GBP/USD", price: "1.3012", change: "+0.35%", dir: "up" },
-  { symbol: "OIL", price: "67.45", change: "-0.85%", dir: "down" },
-  { symbol: "NAS100", price: "18,890", change: "+0.92%", dir: "up" },
-  { symbol: "USD/JPY", price: "148.20", change: "-0.42%", dir: "down" },
-];
+
 
 // ── New York session instruments (NYSE / NASDAQ-listed mega-caps + Gold) ──
 const NY_INSTRUMENTS: SessionInstrument[] = [
@@ -244,21 +235,18 @@ const GlobalMarkets = () => {
         />
 
 
-        {/* Live Ticker Strip */}
-        <div className="overflow-x-auto animate-fade-in">
-          <div className="flex gap-2 min-w-max pb-2">
-            {LIVE_MARKET_DATA.map((m) => (
-              <div key={m.symbol} className={`flex items-center gap-2 rounded-lg border px-3 py-2 text-xs ${m.dir === "up" ? "border-success/30 bg-success/5" : "border-destructive/30 bg-destructive/5"}`}>
-                <span className="font-bold text-foreground">{m.symbol}</span>
-                <span className="font-mono text-foreground">{m.price}</span>
-                <span className={`font-bold ${m.dir === "up" ? "text-success" : "text-destructive"}`}>
-                  {m.dir === "up" ? <TrendingUp className="h-3 w-3 inline mr-0.5" /> : <TrendingDown className="h-3 w-3 inline mr-0.5" />}
-                  {m.change}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
+        {/* Data integrity banner */}
+        <Card className="border-primary/20 bg-primary/5 animate-fade-in">
+          <CardContent className="flex flex-col gap-2 p-4 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p className="text-sm font-semibold">Market status & research</p>
+              <p className="text-xs text-muted-foreground">Session status below is calculated from market hours. Prices and signals are shown only where a live data source is connected.</p>
+            </div>
+            <Button variant="outline" size="sm" asChild className="shrink-0">
+              <Link to="/signals">Open live signals <ArrowRight className="ml-1 h-3 w-3" /></Link>
+            </Button>
+          </CardContent>
+        </Card>
 
         {/* Global Risk Pulse */}
         <Card className="animate-fade-in">
@@ -278,26 +266,14 @@ const GlobalMarkets = () => {
           </CardContent>
         </Card>
 
-        {/* This Week's Focus */}
-        <Card className="border-primary/30 animate-fade-in">
+        <Card className="border-border/60 animate-fade-in">
           <CardContent className="p-4">
-            <h2 className="text-sm font-extrabold text-foreground mb-3 flex items-center gap-2">
-              <Sparkles className="h-4 w-4 text-primary" /> 🔥 This Week's Market Focus
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              {[
-                { title: "US CPI Wednesday", desc: "Consumer inflation — THE key driver for Fed rate expectations. All USD pairs + Gold + Indices.", badge: "HIGH", color: "border-destructive/30" },
-                { title: "FOMC Minutes Wed", desc: "Detailed Fed discussion from March meeting. Watch for hawkish/dovish language shifts.", badge: "HIGH", color: "border-warning/30" },
-                { title: "PPI Thursday", desc: "Producer price data — leading indicator for CPI trends. Watch for upstream inflation.", badge: "HIGH", color: "border-primary/30" },
-              ].map((f, i) => (
-                <div key={i} className={`rounded-lg border ${f.color} p-3`}>
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="text-xs font-bold text-foreground">{f.title}</span>
-                    <Badge variant="outline" className="text-[9px]">{f.badge}</Badge>
-                  </div>
-                  <p className="text-[11px] text-muted-foreground">{f.desc}</p>
-                </div>
-              ))}
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <h2 className="text-sm font-extrabold">Upcoming market events</h2>
+                <p className="mt-1 text-xs text-muted-foreground">Use the live economic calendar for current event times and impact. Avoid relying on static event dates.</p>
+              </div>
+              <Button variant="outline" size="sm" asChild><Link to="/news-calendar">Open economic calendar <ArrowRight className="ml-1 h-3 w-3" /></Link></Button>
             </div>
           </CardContent>
         </Card>

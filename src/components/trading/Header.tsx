@@ -79,6 +79,7 @@ export const Header = () => {
                       variant={active ? "secondary" : "ghost"}
                       size="sm"
                       className="px-2.5 text-xs"
+                      aria-current={active ? "page" : undefined}
                       onClick={() => navigate(group.to!)}
                     >
                       {group.label}
@@ -89,7 +90,8 @@ export const Header = () => {
                 return (
                   <DropdownMenu key={group.label}>
                     <DropdownMenuTrigger asChild>
-                      <Button variant={active ? "secondary" : "ghost"} size="sm" className="px-2.5 text-xs">
+                      <Button variant={active ? "secondary" : "ghost"} size="sm" className="px-2.5 text-xs"
+                      aria-current={active ? "page" : undefined}>
                         {group.label}
                         <ChevronDown className="w-3 h-3 ml-1 opacity-60" />
                       </Button>
@@ -98,7 +100,7 @@ export const Header = () => {
                       <DropdownMenuLabel>{group.label}</DropdownMenuLabel>
                       <DropdownMenuSeparator />
                       {group.items.map((item) => (
-                        <DropdownMenuItem key={item.to} onClick={() => navigate(item.to)}>
+                        <DropdownMenuItem key={item.to} className="min-h-11" onClick={() => navigate(item.to)}>
                           {item.icon && <item.icon className="w-4 h-4 mr-2 text-primary" />}
                           <span className="flex-1">{item.label}</span>
                         </DropdownMenuItem>

@@ -61,7 +61,7 @@ export const Header = () => {
               </div>
               <div className="hidden sm:block">
                 <span className="font-bold text-lg gold-text block">BOTVIO</span>
-                <p className="text-[10px] text-muted-foreground">powered by Deriv</p>
+                <p className="text-[10px] text-muted-foreground">Deriv integration</p>
               </div>
             </button>
 

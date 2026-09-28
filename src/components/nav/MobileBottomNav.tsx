@@ -31,7 +31,7 @@ export const MobileBottomNav = () => {
                 type="button"
                 onClick={() => setOpen(false)}
                 aria-label="Close menu"
-                className="rounded-lg p-1.5 text-muted-foreground hover:text-foreground"
+                className="min-h-10 min-w-10 rounded-lg p-2.5 text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
               >
                 <X className="h-4 w-4" />
               </button>
@@ -62,7 +62,7 @@ export const MobileBottomNav = () => {
 
       <nav
         aria-label="Primary mobile navigation"
-        className="fixed inset-x-0 bottom-0 z-50 grid grid-cols-6 border-t border-border/60 bg-card/95 backdrop-blur-xl lg:hidden"
+        className="fixed inset-x-0 bottom-0 z-50 grid grid-cols-6 border-t border-border/60 bg-card/95 pb-[env(safe-area-inset-bottom)] backdrop-blur-xl lg:hidden"
       >
         {BOTTOM_NAV.map(({ label, to, icon: Icon }) => (
           <Link
@@ -83,7 +83,7 @@ export const MobileBottomNav = () => {
           onClick={() => setOpen((v) => !v)}
           aria-expanded={open}
           className={cn(
-            "flex min-h-14 flex-col items-center justify-center gap-1 text-[10px] font-medium transition-colors",
+            "flex min-h-14 min-w-0 flex-col items-center justify-center gap-1 px-1 text-[10px] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary",
             open ? "text-primary" : "text-muted-foreground",
           )}
         >
@@ -92,7 +92,7 @@ export const MobileBottomNav = () => {
         </button>
       </nav>
       {/* Spacer so page content is never hidden behind the bar */}
-      <div className="h-14 lg:hidden" aria-hidden />
+      <div className="h-[calc(3.5rem+env(safe-area-inset-bottom))] lg:hidden" aria-hidden />
     </>
   );
 };

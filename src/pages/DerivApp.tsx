@@ -93,13 +93,24 @@ const DerivApp = () => {
               {isDerivConnected ? `Deriv Connected${accountId ? ` · ${accountId}` : ""}` : "Not connected"}
             </Badge>
             <p className="text-[11px] text-muted-foreground mt-0.5">
-              Equity {equity ? equity.toFixed(2) : "0.00"}
+              Equity {equity != null ? equity.toFixed(2) : "—"}
             </p>
           </div>
         </div>
       </div>
 
       <main className="container mx-auto max-w-3xl px-4 py-5">
+        {!isDerivConnected && (
+          <Card className="mb-4 border-warning/30 bg-warning/5">
+            <CardContent className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <p className="text-sm font-semibold">Connect Deriv before trading</p>
+                <p className="text-xs text-muted-foreground">Market research is available publicly. Trading actions require an authenticated Deriv session.</p>
+              </div>
+              <Button size="sm" asChild><Link to="/connections">Connect Deriv <ArrowRight className="ml-1 h-3 w-3" /></Link></Button>
+            </CardContent>
+          </Card>
+        )}
         <div className="mb-4 space-y-3">
           <DerivConnectionBar />
           <TradingNav />

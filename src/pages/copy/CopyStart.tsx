@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
-import { ArrowLeft, ShieldAlert, PlugZap, CheckCircle2 } from "lucide-react";
+import { ArrowLeft, ShieldAlert, PlugZap, CheckCircle2, LockKeyhole, Settings2, CircleHelp } from "lucide-react";
 import { toast } from "sonner";
 import { Header } from "@/components/trading/Header";
 import { SEOHead } from "@/components/seo/SEOHead";
@@ -190,7 +190,8 @@ const CopyStart = () => {
         {/* Risk */}
         <Card className="glass-card">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm">Risk settings</CardTitle>
+            <CardTitle className="text-sm flex items-center gap-2"><Settings2 className="h-4 w-4 text-primary" /> Set your copy limits</CardTitle>
+            <p className="text-xs text-muted-foreground">These limits belong to your account. They do not change the provider's own account.</p>
           </CardHeader>
           <CardContent className="space-y-4">
             <RadioGroup
@@ -325,11 +326,16 @@ const CopyStart = () => {
               </label>
             </div>
 
+            <div className="rounded-xl border border-primary/20 bg-primary/5 p-3">
+              <p className="flex items-center gap-2 text-xs font-semibold"><LockKeyhole className="h-3.5 w-3.5 text-primary" /> Final review</p>
+              <p className="mt-1 text-[11px] text-muted-foreground">You can pause or stop copying later. Execution prices can differ from the provider because of timing, liquidity and account conditions.</p>
+            </div>
+
             <Button className="w-full" onClick={handleStart} disabled={subscribe.isPending}>
               {subscribe.isPending ? "Submitting…" : "Start copying"}
             </Button>
 
-            <p className="flex items-start gap-2 text-[11px] text-muted-foreground">
+            <p className="flex items-start gap-2 text-[11px] text-muted-foreground"><CircleHelp className="mt-0.5 h-3.5 w-3.5 shrink-0" />
               <ShieldAlert className="mt-0.5 h-3.5 w-3.5 shrink-0 text-warning" />
               Copy trading involves risk. Past performance does not guarantee future results. Your
               trades execute in your own connected account — provider credentials are never shared.

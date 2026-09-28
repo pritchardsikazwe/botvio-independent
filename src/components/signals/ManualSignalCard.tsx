@@ -1,4 +1,6 @@
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
 import { 
   TrendingUp, 
@@ -80,6 +82,7 @@ export const ManualSignalCard = ({ signal, compact = false, showBrokerButtons = 
   };
 
   const riskLabel = getRiskLabel(signal.confidence);
+  const chartSymbol = encodeURIComponent(signal.symbol.replace(/[^A-Za-z0-9._-]/g, ""));
 
   if (compact) {
     return (
@@ -178,13 +181,13 @@ export const ManualSignalCard = ({ signal, compact = false, showBrokerButtons = 
 
       <CardContent className="space-y-4">
         {/* Price levels */}
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-3">
           <div className="p-3 rounded-lg bg-background/50 border border-border/50">
             <div className="flex items-center gap-1.5 text-muted-foreground text-xs mb-1">
               <Zap className="h-3 w-3" />
               Entry
             </div>
-            <p className="font-mono font-bold text-lg">{signal.entry_price}</p>
+            <p className="font-mono font-bold text-base sm:text-lg break-all">{signal.entry_price}</p>
           </div>
           
           <div className="p-3 rounded-lg bg-success/10 border border-success/20">
@@ -192,7 +195,7 @@ export const ManualSignalCard = ({ signal, compact = false, showBrokerButtons = 
               <Target className="h-3 w-3" />
               Take Profit
             </div>
-            <p className="font-mono font-bold text-lg text-success">
+            <p className="font-mono font-bold text-base sm:text-lg break-all text-success">
               {signal.take_profit || 'TBA'}
             </p>
           </div>
@@ -202,7 +205,7 @@ export const ManualSignalCard = ({ signal, compact = false, showBrokerButtons = 
               <Shield className="h-3 w-3" />
               Stop Loss
             </div>
-            <p className="font-mono font-bold text-lg text-destructive">
+            <p className="font-mono font-bold text-base sm:text-lg break-all text-destructive">
               {signal.stop_loss || 'TBA'}
             </p>
           </div>
@@ -248,6 +251,15 @@ export const ManualSignalCard = ({ signal, compact = false, showBrokerButtons = 
             ))}
           </div>
         )}
+
+        {/* Chart action */}
+        <div className="pt-2">
+          <Button asChild variant="outline" className="w-full min-h-11">
+            <Link to={`/chart/${chartSymbol}?signal=${encodeURIComponent(signal.id)}`}>
+              Open chart & signal levels
+            </Link>
+          </Button>
+        </div>
 
         {/* Broker Buttons */}
         {showBrokerButtons && brokers && brokers.length > 0 && (

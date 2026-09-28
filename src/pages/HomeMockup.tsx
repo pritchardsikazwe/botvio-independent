@@ -61,7 +61,7 @@ const HomeMockup = () => {
             <div className="leading-none"><div className="text-lg font-black tracking-tight">BOTVIO</div><div className="mt-0.5 text-[8px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">AI Trading Intelligence</div></div>
           </Link>
           <nav className="mx-auto hidden items-center gap-1 lg:flex" aria-label="Primary navigation">
-            {[['Markets','/markets'],['AI Analysis','/chart/XAUUSD'],['Signals','/signals'],['Copy Trading','/copy-trading'],['Bots','/bots'],['Brokers','/brokers'],['Learn','/learn']].map(([label,to]) => <Link key={to} to={to} className="rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground transition hover:bg-secondary hover:text-foreground">{label}</Link>)}
+            {[['Start Here','/beginner-guide'],['Markets','/markets'],['AI Analysis','/chart/XAUUSD'],['Signals','/signals'],['Copy Trading','/copy-trading'],['Bots','/bots'],['Brokers','/brokers'],['Learn','/learn']].map(([label,to]) => <Link key={to} to={to} className="rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground transition hover:bg-secondary hover:text-foreground">{label}</Link>)}
           </nav>
           <div className="ml-auto flex items-center gap-2">
             {user ? <Button size="sm" asChild className="font-bold"><Link to="/dashboard">Dashboard</Link></Button> : <><Button variant="ghost" size="sm" onClick={start} className="hidden sm:inline-flex">Log in</Button><Button size="sm" onClick={start} className="font-bold">Start Free</Button></>}
@@ -80,12 +80,43 @@ const HomeMockup = () => {
               <h1 className="max-w-3xl text-4xl font-black leading-[1.02] tracking-tight sm:text-5xl lg:text-6xl">See the market.<span className="block text-primary">Understand the setup.</span><span className="block">Trade with a plan.</span></h1>
               <p className="mt-6 max-w-xl text-base leading-7 text-muted-foreground sm:text-lg">Botvio brings live markets, AI chart analysis, signals, copy trading and automated trading tools into one trader workflow.</p>
               <div className="mt-8 flex flex-col gap-3 sm:flex-row"><Button size="lg" onClick={start} className="h-12 px-7 font-bold">Create Free Account <ArrowRight className="ml-2 h-4 w-4" /></Button><Button size="lg" variant="outline" asChild className="h-12 px-7 font-semibold"><Link to="/markets">Explore Live Markets</Link></Button></div>
+              <p className="mt-4 text-[11px] leading-5 text-muted-foreground">Trading involves risk. Signals and analysis are informational and do not guarantee results.</p>
               <div className="mt-6 flex flex-wrap gap-x-5 gap-y-2 text-xs text-muted-foreground">{['Market research','AI analysis','Signals','Copy trading','Trading bots'].map(x => <span key={x} className="flex items-center gap-1.5"><Check className="h-3.5 w-3.5 text-success" />{x}</span>)}</div>
             </div>
             <div className="rounded-3xl border border-border/70 bg-card/80 p-4 shadow-2xl backdrop-blur-xl sm:p-5">
               <div className="mb-4 flex items-center justify-between"><div><p className="text-[10px] font-bold uppercase tracking-widest text-primary">Live market desk</p><h2 className="mt-1 text-xl font-black">XAU/USD</h2></div><Badge className="gap-1.5 bg-success/15 text-success hover:bg-success/15"><span className="h-1.5 w-1.5 rounded-full bg-success" /> Live</Badge></div>
               <div className="rounded-2xl border border-border/60 bg-background/60 p-4"><GoldPriceHeader /><div className="mt-4 h-44 overflow-hidden rounded-xl border border-border/50 bg-card/50"><div className="flex h-full items-center justify-center px-5"><div className="w-full"><div className="mb-2 flex items-center justify-between text-[10px] text-muted-foreground"><span>AI market view</span><span>Trend • Levels • Momentum</span></div><div className="relative h-24 overflow-hidden rounded-lg bg-secondary/40"><svg viewBox="0 0 500 120" className="h-full w-full" preserveAspectRatio="none" aria-label="Market trend preview"><polyline points="0,90 45,78 80,82 120,62 165,70 205,45 245,53 290,31 335,42 375,22 420,35 455,15 500,24" fill="none" className="stroke-primary" strokeWidth="3" /></svg></div><div className="mt-3 grid grid-cols-3 gap-2 text-center text-[10px]"><div className="rounded-lg bg-secondary/60 p-2"><span className="block text-muted-foreground">Trend</span><strong className="text-success">Bullish</strong></div><div className="rounded-lg bg-secondary/60 p-2"><span className="block text-muted-foreground">Momentum</span><strong>Strong</strong></div><div className="rounded-lg bg-secondary/60 p-2"><span className="block text-muted-foreground">Risk</span><strong>Manage</strong></div></div></div></div></div></div>
               <div className="mt-4 grid grid-cols-3 gap-2">{[['AI Analyze','/chart/XAUUSD'],['Signals','/signals'],['Copy Trade','/copy-trading']].map(([label,to]) => <Button key={to} variant="outline" size="sm" asChild className="text-xs font-bold"><Link to={to}>{label}</Link></Button>)}</div>
+            </div>
+          </div>
+        </section>
+
+        <section className="border-b border-border/50 bg-card/20">
+          <div className="container mx-auto px-4 py-10 sm:py-12">
+            <div className="mx-auto max-w-3xl text-center">
+              <Badge variant="outline" className="mb-3 border-primary/30 text-primary">START HERE</Badge>
+              <h2 className="text-2xl font-black sm:text-3xl">Choose your Botvio journey</h2>
+              <p className="mt-2 text-sm leading-6 text-muted-foreground">Explore public markets and tools first. Create an account when you want a personalized workspace or connected trading features.</p>
+            </div>
+            <div className="mt-7 grid gap-3 md:grid-cols-3">
+              <Link to="/beginner-guide" className="group rounded-2xl border border-border/60 bg-card p-5 transition hover:-translate-y-0.5 hover:border-primary/50">
+                <div className="text-xs font-bold uppercase tracking-wider text-primary">New to trading</div>
+                <h3 className="mt-2 text-lg font-black">Start learning</h3>
+                <p className="mt-2 text-xs leading-5 text-muted-foreground">Understand markets, risk, signals and trading workflows before choosing a platform.</p>
+                <span className="mt-4 inline-flex items-center text-xs font-bold text-primary">Beginner guide <ArrowRight className="ml-1 h-3 w-3" /></span>
+              </Link>
+              <Link to="/signals" className="group rounded-2xl border border-border/60 bg-card p-5 transition hover:-translate-y-0.5 hover:border-primary/50">
+                <div className="text-xs font-bold uppercase tracking-wider text-primary">I already trade</div>
+                <h3 className="mt-2 text-lg font-black">Research signals</h3>
+                <p className="mt-2 text-xs leading-5 text-muted-foreground">Review market setups, open charts and research the context before taking action.</p>
+                <span className="mt-4 inline-flex items-center text-xs font-bold text-primary">View signals <ArrowRight className="ml-1 h-3 w-3" /></span>
+              </Link>
+              <Link to="/brokers" className="group rounded-2xl border border-border/60 bg-card p-5 transition hover:-translate-y-0.5 hover:border-primary/50">
+                <div className="text-xs font-bold uppercase tracking-wider text-primary">Looking for a platform</div>
+                <h3 className="mt-2 text-lg font-black">Explore partners</h3>
+                <p className="mt-2 text-xs leading-5 text-muted-foreground">Review broker platforms, markets and account information before deciding.</p>
+                <span className="mt-4 inline-flex items-center text-xs font-bold text-primary">View partners <ArrowRight className="ml-1 h-3 w-3" /></span>
+              </Link>
             </div>
           </div>
         </section>

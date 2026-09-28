@@ -24,6 +24,7 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { OptionsBrokerDirectory } from "@/components/options/OptionsBrokerDirectory";
+import { SignalBrokerLinks } from "@/components/options/SignalBrokerLinks";
 
 const CONTRACT_TYPES = [
   {
@@ -335,7 +336,7 @@ export default function BinaryOptions() {
                           </Link>
                         </Button>
                       </div>
-                      {signal.reason && <p className="mt-3 pt-3 border-t border-border/40 text-xs text-muted-foreground">{signal.reason}</p>}
+{signal.reason && <p className="mt-3 pt-3 border-t border-border/40 text-xs text-muted-foreground">{signal.reason}</p>}\n                      <SignalBrokerLinks symbol={signal.symbol} />
                     </div>
                   ))
                 ) : (

@@ -33,7 +33,7 @@ const App = () => (
                 matches. Unknown prefixes pass through unchanged.
               */}
               <LocalePrefixRouter>
-                <AppRoutes />
+                <div id="main-content"><AppRoutes /></div>
                 <SiteFooterGate />
                 <MobileBottomNav />
               </LocalePrefixRouter>

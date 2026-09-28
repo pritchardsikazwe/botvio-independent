@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { BadgeCheck, Users, Activity, ShieldCheck } from "lucide-react";
+import { BadgeCheck, Users, Activity, ShieldCheck, ArrowUpRight, Layers } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { PLATFORM_LABEL } from "@/hooks/useCopyTrading";
 

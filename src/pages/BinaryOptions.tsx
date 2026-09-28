@@ -23,6 +23,7 @@ import {
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
+import { OptionsBrokerDirectory } from "@/components/options/OptionsBrokerDirectory";
 
 const CONTRACT_TYPES = [
   {
@@ -209,6 +210,8 @@ export default function BinaryOptions() {
             </CardContent>
           </Card>
         </section>
+
+        <OptionsBrokerDirectory />
 
         <section className="mb-8">
           <div className="flex items-end justify-between gap-3 mb-4">

@@ -98,6 +98,25 @@ const CopyProviderProfile = () => {
 
             <Card className="glass-card">
               <CardHeader className="pb-2">
+                <CardTitle className="text-sm">Review before copying</CardTitle>
+              </CardHeader>
+              <CardContent className="grid gap-2 sm:grid-cols-2">
+                {[
+                  ["Track record", "Review the number of closed trades and historical P/L—not just one headline metric."],
+                  ["Risk limits", "Check maximum drawdown, daily loss and risk-per-trade settings."],
+                  ["Markets", "Confirm the instruments and trading style match what you intend to copy."],
+                  ["Execution", "Your entry, exit and result can differ from the provider because execution conditions vary."],
+                ].map(([title, text]) => (
+                  <div key={title} className="rounded-xl border border-border/60 bg-muted/20 p-3">
+                    <p className="text-xs font-semibold">{title}</p>
+                    <p className="mt-1 text-[11px] leading-relaxed text-muted-foreground">{text}</p>
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+
+            <Card className="glass-card">
+              <CardHeader className="pb-2">
                 <CardTitle className="text-sm">Published strategies</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">

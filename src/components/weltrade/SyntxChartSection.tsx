@@ -1,79 +1,139 @@
 import { useMemo, useState } from "react";
-import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Activity, Rocket, Bomb, RefreshCw, Shuffle, Zap, BarChart3, ExternalLink } from "lucide-react";
+import { Activity, Rocket, Bomb, RefreshCw, Shuffle, Zap, BarChart3, ExternalLink, GitBranch, TrendingUp, TrendingDown } from "lucide-react";
 import { SyntxBridgeChart } from "@/components/weltrade/SyntxBridgeChart";
 import { SyntxHauzaSignalButton } from "@/components/weltrade/SyntxHauzaSignalButton";
 
 const WELTRADE_LINK = "https://gowt.net/ib67505";
 
-type SyntxCategory = "GainX" | "PainX" | "FlipX" | "SwitchX" | "FX";
+export type SyntxCategory =
+  | "FX Vol." | "SFX Vol." | "PainX" | "GainX" | "FlipX"
+  | "SwitchX" | "BreakX" | "TrendX" | "Progression";
 
-interface SyntxInst {
+export interface SyntxInst {
   key: string;
-  label: string;          // Display label
-  mt5Symbol: string;      // Exact Weltrade MT5 ticker
+  label: string;
+  mt5Symbol: string;
   category: SyntxCategory;
   bias: "buy" | "sell" | "both";
   blurb: string;
 }
 
+const make = (
+  prefix: string,
+  category: SyntxCategory,
+  values: Array<string | number>,
+  bias: SyntxInst["bias"],
+  blurb: string,
+) => values.map((value) => {
+  const label = `${prefix} ${value}`;
+  return { key: label.toLowerCase().replace(/[^a-z0-9]+/g, "-"), label, mt5Symbol: label, category, bias, blurb };
+});
+
 const SYNTX: SyntxInst[] = [
-  // GainX (sell bias — boom-style)
-  { key: "gainx-400", label: "GainX 400", mt5Symbol: "GainX 400", category: "GainX", bias: "sell", blurb: "Frequent upward spikes — sell bias scalping." },
-  { key: "gainx-600", label: "GainX 600", mt5Symbol: "GainX 600", category: "GainX", bias: "sell", blurb: "Mid-range gainx — balanced spikes." },
-  { key: "gainx-800", label: "GainX 800", mt5Symbol: "GainX 800", category: "GainX", bias: "sell", blurb: "Slow-burn — larger moves between spikes." },
-  // PainX (buy bias — crash-style)
-  { key: "painx-400", label: "PainX 400", mt5Symbol: "PainX 400", category: "PainX", bias: "buy", blurb: "Frequent downward spikes — buy bias scalping." },
-  { key: "painx-600", label: "PainX 600", mt5Symbol: "PainX 600", category: "PainX", bias: "buy", blurb: "Mid-range painx — balanced setups." },
-  { key: "painx-800", label: "PainX 800", mt5Symbol: "PainX 800", category: "PainX", bias: "buy", blurb: "Slow-burn crash — larger move setups." },
-  // FlipX
-  { key: "flipx-1", label: "FlipX 1", mt5Symbol: "FlipX 1", category: "FlipX", bias: "both", blurb: "Reversal-driven — fastest flip cadence." },
-  { key: "flipx-2", label: "FlipX 2", mt5Symbol: "FlipX 2", category: "FlipX", bias: "both", blurb: "Quick flips with steady volatility." },
-  { key: "flipx-3", label: "FlipX 3", mt5Symbol: "FlipX 3", category: "FlipX", bias: "both", blurb: "Balanced flip behaviour." },
-  { key: "flipx-4", label: "FlipX 4", mt5Symbol: "FlipX 4", category: "FlipX", bias: "both", blurb: "Slower flips — cleaner structure." },
-  { key: "flipx-5", label: "FlipX 5", mt5Symbol: "FlipX 5", category: "FlipX", bias: "both", blurb: "Slowest flips — wider swings." },
-  // SwitchX
-  { key: "switchx-600",  label: "SwitchX 600",  mt5Symbol: "SwitchX 600",  category: "SwitchX", bias: "both", blurb: "Phase switches every ~600 ticks." },
-  { key: "switchx-1200", label: "SwitchX 1200", mt5Symbol: "SwitchX 1200", category: "SwitchX", bias: "both", blurb: "Mid-cycle phase switches." },
-  { key: "switchx-1800", label: "SwitchX 1800", mt5Symbol: "SwitchX 1800", category: "SwitchX", bias: "both", blurb: "Slow phase rotations — trend setups." },
-  // FX (Weltrade tickers are "FX VOL 20/40/80")
-  { key: "fx-20", label: "FX VOL 20", mt5Symbol: "FX VOL 20", category: "FX", bias: "both", blurb: "Low-noise FX index — clean structure." },
-  { key: "fx-40", label: "FX VOL 40", mt5Symbol: "FX VOL 40", category: "FX", bias: "both", blurb: "Balanced FX volatility." },
-  { key: "fx-80", label: "FX VOL 80", mt5Symbol: "FX VOL 80", category: "FX", bias: "both", blurb: "Higher volatility FX — aggressive setups." },
+  ...make("FX Vol.", "FX Vol.", [20, 40, 60, 80, 99], "both", "Synthetic volatility family; analyse the selected volatility level and current structure."),
+  ...make("SFX Vol.", "SFX Vol.", [20, 40, 60, 80, 99], "both", "FX Vol.-style behaviour with an additional spike mechanism, according to Weltrade."),
+  ...make("PainX", "PainX", [400, 600, 800, 999, 1200], "buy", "Upward directional behaviour with occasional downward jumps; verify the live feed before acting."),
+  ...make("GainX", "GainX", [400, 600, 800, 999, 1200], "sell", "Downward directional behaviour with occasional upward jumps; verify the live feed before acting."),
+  ...make("FlipX", "FlipX", [1, 2, 3, 4, 5], "both", "Fixed-step directional flips; use range and structure analysis rather than assuming a trend."),
+  ...make("SwitchX", "SwitchX", [600, 1200, 1800], "both", "Starts with GainX-style behaviour and can switch to PainX-style behaviour after a qualifying jump."),
+  ...make("BreakX", "BreakX", [600, 1200, 1800], "both", "Breakout-style regime mechanics; compare jump behaviour before treating a switch as confirmed."),
+  ...make("TrendX", "TrendX", [600, 1200, 1800], "both", "Trend-regime mechanics; confirm higher-high/higher-low or lower-high/lower-low structure."),
+  { key: "plusx-1", label: "PlusX 1", mt5Symbol: "PlusX 1", category: "Progression", bias: "both", blurb: "Linear progression: step sizes increase 1, 2, 3, 4, 5 …" },
+  { key: "fibox", label: "FiboX", mt5Symbol: "FiboX", category: "Progression", bias: "both", blurb: "Fibonacci progression mechanics: 1, 1, 2, 3, 5, 8 …" },
+  { key: "quadx", label: "QuadX", mt5Symbol: "QuadX", category: "Progression", bias: "both", blurb: "Quadratic progression mechanics: 1, 4, 9, 16, 25 …" },
+  { key: "max-painx", label: "MAX PainX", mt5Symbol: "MAX PainX", category: "Progression", bias: "buy", blurb: "Progression mechanics combined with PainX-style directional behaviour." },
+  { key: "max-gainx", label: "MAX GainX", mt5Symbol: "MAX GainX", category: "Progression", bias: "sell", blurb: "Progression mechanics combined with GainX-style directional behaviour." },
 ];
 
 const CATEGORY_META: Record<SyntxCategory, { icon: typeof Rocket; tone: string }> = {
-  GainX:   { icon: Rocket,   tone: "text-emerald-400 border-emerald-500/40" },
-  PainX:   { icon: Bomb,     tone: "text-red-400 border-red-500/40" },
-  FlipX:   { icon: RefreshCw,tone: "text-amber-400 border-amber-500/40" },
-  SwitchX: { icon: Shuffle,  tone: "text-blue-400 border-blue-500/40" },
-  FX:      { icon: Zap,      tone: "text-purple-400 border-purple-500/40" },
+  "FX Vol.": { icon: Zap, tone: "text-purple-400 border-purple-500/40" },
+  "SFX Vol.": { icon: Zap, tone: "text-fuchsia-400 border-fuchsia-500/40" },
+  PainX: { icon: Bomb, tone: "text-red-400 border-red-500/40" },
+  GainX: { icon: Rocket, tone: "text-emerald-400 border-emerald-500/40" },
+  FlipX: { icon: RefreshCw, tone: "text-amber-400 border-amber-500/40" },
+  SwitchX: { icon: Shuffle, tone: "text-blue-400 border-blue-500/40" },
+  BreakX: { icon: GitBranch, tone: "text-cyan-400 border-cyan-500/40" },
+  TrendX: { icon: TrendingUp, tone: "text-indigo-400 border-indigo-500/40" },
+  Progression: { icon: BarChart3, tone: "text-orange-400 border-orange-500/40" },
 };
 
+const FILTERS: Array<SyntxCategory | "all"> = [
+  "all", "FX Vol.", "SFX Vol.", "PainX", "GainX", "FlipX", "SwitchX", "BreakX", "TrendX", "Progression",
+];
+
 export function SyntxChartSection() {
-  const [activeKey, setActiveKey] = useState<string>(SYNTX[0].key);
+  const [activeKey, setActiveKey] = useState<string>("gainx-400");
   const [filter, setFilter] = useState<SyntxCategory | "all">("all");
 
   const active = useMemo(() => SYNTX.find((s) => s.key === activeKey) ?? SYNTX[0], [activeKey]);
   const filtered = useMemo(
-    () => (filter === "all" ? SYNTX : SYNTX.filter((s) => s.category === filter)),
+    () => filter === "all" ? SYNTX : SYNTX.filter((s) => s.category === filter),
     [filter],
   );
 
+  const chooseFilter = (next: SyntxCategory | "all") => {
+    setFilter(next);
+    if (next !== "all") {
+      const first = SYNTX.find((s) => s.category === next);
+      if (first) setActiveKey(first.key);
+    }
+  };
+
   return (
-    <div className="space-y-6">
-      {/* Active chart + info */}
+    <div className="space-y-5 sm:space-y-6">
+      <div className="rounded-2xl border border-border/60 bg-card p-3 sm:p-4">
+        <div className="flex flex-col gap-3">
+          <div className="flex items-center justify-between gap-2">
+            <div>
+              <p className="text-[10px] uppercase tracking-wider text-primary font-bold">SyntX instrument browser</p>
+              <p className="text-xs text-muted-foreground mt-0.5">Select a family, then choose the exact MT5 symbol.</p>
+            </div>
+            <Badge variant="outline" className="text-[10px] shrink-0">{SYNTX.length} instruments</Badge>
+          </div>
+          <div className="flex gap-2 overflow-x-auto pb-1 snap-x scrollbar-none">
+            {FILTERS.map((item) => (
+              <button
+                key={item}
+                onClick={() => chooseFilter(item)}
+                className={`shrink-0 snap-start rounded-lg border px-3 py-2 text-[11px] font-bold transition-colors ${
+                  filter === item ? "border-primary bg-primary/10 text-primary" : "border-border/60 bg-background text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                {item === "all" ? "All" : item}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
         <div className="lg:col-span-1 space-y-3">
+          <div className="rounded-xl border border-border/60 bg-card p-3">
+            <div className="flex items-start justify-between gap-2">
+              <div className="min-w-0">
+                <p className="text-[10px] uppercase text-muted-foreground font-bold">Selected instrument</p>
+                <h2 className="text-lg font-extrabold text-foreground truncate mt-0.5">{active.label}</h2>
+              </div>
+              <Badge variant="outline" className="text-[9px] shrink-0">{active.category}</Badge>
+            </div>
+            <p className="text-xs text-muted-foreground leading-relaxed mt-2">{active.blurb}</p>
+            <div className="flex flex-wrap gap-1.5 mt-3">
+              <Badge variant="outline" className="text-[9px] border-primary/30 text-primary font-mono">{active.mt5Symbol}</Badge>
+              <Badge variant="outline" className={`text-[9px] ${active.bias === "buy" ? "border-emerald-500/40 text-emerald-400" : active.bias === "sell" ? "border-red-500/40 text-red-400" : "border-blue-500/40 text-blue-400"}`}>
+                {active.bias === "buy" ? "Directional buy" : active.bias === "sell" ? "Directional sell" : "Two-way analysis"}
+              </Badge>
+            </div>
+          </div>
+
           <SyntxHauzaSignalButton
             mt5Symbol={active.mt5Symbol}
             label={active.label}
             category={active.category}
             bias={active.bias}
           />
+
           <a href={WELTRADE_LINK} target="_blank" rel="noopener noreferrer" className="block">
             <Button variant="gold" className="w-full font-bold text-xs">
               <ExternalLink className="h-3.5 w-3.5 mr-1.5" /> Trade on Weltrade
@@ -81,28 +141,15 @@ export function SyntxChartSection() {
           </a>
         </div>
 
-        <div className="lg:col-span-3">
+        <div className="lg:col-span-3 min-w-0">
           <SyntxBridgeChart symbol={active.mt5Symbol} label={active.label} height={460} />
-          <p className="text-[11px] text-muted-foreground mt-2 px-2">
-            🔌 Live prices stream from your Weltrade MT5 terminal via the BOTVIO Bridge EA. Add this symbol to MT5 Market Watch to see the feed.
+          <p className="text-[11px] text-muted-foreground mt-2 px-1 leading-relaxed">
+            Live prices come from the BOTVIO Bridge EA connected to a Weltrade MT5 terminal. A stale/offline feed is clearly labelled; Botvio does not substitute another market for the selected SyntX instrument.
           </p>
         </div>
       </div>
 
-      {/* Category filter */}
-      <Tabs value={filter} onValueChange={(v) => setFilter(v as typeof filter)}>
-        <TabsList className="bg-card border border-border/50 h-10 flex-wrap">
-          <TabsTrigger value="all" className="text-xs gap-1.5"><BarChart3 className="h-3.5 w-3.5" /> All</TabsTrigger>
-          <TabsTrigger value="GainX" className="text-xs gap-1.5"><Rocket className="h-3.5 w-3.5" /> GainX</TabsTrigger>
-          <TabsTrigger value="PainX" className="text-xs gap-1.5"><Bomb className="h-3.5 w-3.5" /> PainX</TabsTrigger>
-          <TabsTrigger value="FlipX" className="text-xs gap-1.5"><RefreshCw className="h-3.5 w-3.5" /> FlipX</TabsTrigger>
-          <TabsTrigger value="SwitchX" className="text-xs gap-1.5"><Shuffle className="h-3.5 w-3.5" /> SwitchX</TabsTrigger>
-          <TabsTrigger value="FX" className="text-xs gap-1.5"><Zap className="h-3.5 w-3.5" /> FX</TabsTrigger>
-        </TabsList>
-      </Tabs>
-
-      {/* Instrument grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3">
         {filtered.map((inst) => {
           const meta = CATEGORY_META[inst.category];
           const CatIcon = meta.icon;
@@ -111,28 +158,25 @@ export function SyntxChartSection() {
             <button
               key={inst.key}
               onClick={() => setActiveKey(inst.key)}
-              className={`text-left rounded-xl border-2 p-3 transition-all ${
-                isActive
-                  ? "border-primary bg-primary/5 ring-2 ring-primary/30"
-                  : "border-border/50 bg-card hover:border-primary/40"
+              className={`text-left rounded-xl border-2 p-3 transition-all min-w-0 ${
+                isActive ? "border-primary bg-primary/5 ring-2 ring-primary/20" : "border-border/50 bg-card hover:border-primary/40"
               }`}
+              aria-pressed={isActive}
             >
-              <div className="flex items-start justify-between gap-2 mb-1">
+              <div className="flex items-start justify-between gap-2 mb-1.5">
                 <div className="flex items-center gap-2 min-w-0">
                   <CatIcon className={`h-4 w-4 ${meta.tone.split(" ")[0]} shrink-0`} />
                   <span className="text-xs font-bold text-foreground truncate">{inst.label}</span>
                 </div>
-                <Badge variant="outline" className={`text-[9px] ${meta.tone} font-mono shrink-0`}>
-                  {inst.category}
-                </Badge>
+                <Badge variant="outline" className={`text-[9px] ${meta.tone} font-mono shrink-0`}>{inst.category}</Badge>
               </div>
-              <p className="text-[10px] text-muted-foreground line-clamp-2">{inst.blurb}</p>
-              <div className="flex items-center gap-1.5 mt-2">
-                <Badge variant="outline" className="text-[9px] border-emerald-500/40 text-emerald-400">
-                  <Activity className="h-2.5 w-2.5 mr-0.5" /> Bridge Feed
+              <p className="text-[10px] text-muted-foreground line-clamp-2 leading-relaxed">{inst.blurb}</p>
+              <div className="flex items-center gap-1.5 mt-2 flex-wrap">
+                <Badge variant="outline" className="text-[9px] border-emerald-500/30 text-emerald-400">
+                  <Activity className="h-2.5 w-2.5 mr-0.5" /> MT5 Bridge
                 </Badge>
-                <Badge variant="outline" className="text-[9px] border-primary/30 text-primary uppercase">
-                  {inst.bias === "buy" ? "Buy" : inst.bias === "sell" ? "Sell" : "Both"}
+                <Badge variant="outline" className="text-[9px] border-primary/30 text-primary">
+                  {inst.bias === "buy" ? "Buy bias" : inst.bias === "sell" ? "Sell bias" : "Both"}
                 </Badge>
               </div>
             </button>

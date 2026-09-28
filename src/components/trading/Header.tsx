@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Bot, Settings, User, LogOut, GraduationCap, LayoutDashboard, Wallet, Users, CreditCard, Shield, ArrowLeftRight, Gift, MessageCircle, Send, Signal, ChevronDown, BarChart3, Menu, Zap, ShoppingCart, Package, Download, ScanSearch, TrendingUp } from "lucide-react";
+import { Bot, Settings, User, LogOut, LayoutDashboard, Wallet, Users, CreditCard, Shield, ArrowLeftRight, Gift, ChevronDown, BarChart3, Menu, Package, TrendingUp } from "lucide-react";
 import { TradesDrawer } from "@/components/trading/TradesDrawer";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
@@ -17,12 +17,11 @@ import {
   DropdownMenuLabel,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { cn } from "@/lib/utils";
 import { PRIMARY_NAV, MORE_NAV } from "@/components/nav/mainNav";
 
 
 export const Header = () => {
-  const { user, profile, signOut, isAdmin } = useAuth();
+  const { user, profile, signOut } = useAuth();
   const { isDerivConnected, accountInfo, balance, equity, runningTrades } = useDeriv();
   const [showAuthModal, setShowAuthModal] = useState(false);
   const navigate = useNavigate();

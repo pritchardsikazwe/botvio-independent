@@ -3,7 +3,7 @@ import { SEOHead } from "@/components/seo/SEOHead";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { TrendingUp, TrendingDown, ArrowRight, Globe, Activity, Zap, Clock, Sparkles, Lock } from "lucide-react";
+import { ArrowRight, Globe, Activity, Zap, Clock, Sparkles, Lock } from "lucide-react";
 import { Link } from "react-router-dom";
 import { TradingTipsCard } from "@/components/markets/TradingTipsCard";
 import { SessionMarketsBlock, type SessionInstrument } from "@/components/markets/SessionMarketsBlock";
@@ -321,14 +321,16 @@ const GlobalMarkets = () => {
                         </div>
                       </div>
                       <div className="flex flex-wrap gap-1.5">
-                        {r.indices.map((idx) => {
+                        {r.indices.length > 0 ? r.indices.map((idx) => {
                           const isPos = idx.includes("+");
                           return (
                             <Badge key={idx} variant="outline" className={`text-[10px] font-mono ${isPos ? "text-success border-success/30" : "text-destructive border-destructive/30"}`}>
                               {idx}
                             </Badge>
                           );
-                        })}
+                        }) : (
+                          <Badge variant="outline" className="text-[10px]">Live data feed</Badge>
+                        )}
                       </div>
                       <div className="flex items-center justify-between text-[10px]">
                         <span className="text-muted-foreground flex items-center gap-1"><Clock className="h-3 w-3" /> {r.session}</span>

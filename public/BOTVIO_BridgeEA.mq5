@@ -15,8 +15,8 @@ input string   InpBridgeURL = "https://tqqkzeblmjapgbnsbtgw.supabase.co/function
 input int      InpHeartbeatInterval = 10;     // Heartbeat interval (seconds)
 input int      InpCommandPollInterval = 3;    // Command poll interval (seconds)
 input int      InpStatePushInterval = 10;     // State push interval (seconds)
-input int      InpTickPushInterval = 15;      // Tick push interval (seconds, 0=off)
-input int      InpMaxSymbolsPerTickPush = 4;  // Max symbols per tick push (prevents backend overload)
+input int      InpTickPushInterval = 10;      // Tick push interval (seconds, 0=off)
+input int      InpMaxSymbolsPerTickPush = 20; // Max symbols per tick push
 input double   InpFixedLotOverride = 0.0;     // Optional fixed lot override (0=use Botvio/dashboard lot)
 
 //--- Broker preset (auto-fills the symbol list below)
@@ -153,7 +153,7 @@ void OnTimer()
       g_lastStatePush = now;
    }
 
-   // Push live ticks for SyntX/configured symbols
+   // Push live ticks for SyntX/configured symbols; all configured symbols are sent each cycle so the selected chart stays fresh
    if(InpTickPushInterval > 0 && now - g_lastTickPush >= InpTickPushInterval)
    {
       PushTicks();
@@ -309,7 +309,7 @@ void PushTicks()
    bool firstTick = true;
    string brokerName = EscapeJson(AccountInfoString(ACCOUNT_COMPANY));
 
-    int maxPush = InpMaxSymbolsPerTickPush;
+   int maxPush = InpMaxSymbolsPerTickPush;
     if(maxPush <= 0 || maxPush > count) maxPush = count;
 
     for(int pushed = 0; pushed < maxPush; pushed++)

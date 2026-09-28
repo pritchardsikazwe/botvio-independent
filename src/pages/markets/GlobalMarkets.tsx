@@ -381,92 +381,17 @@ const GlobalMarkets = () => {
             />
 
             <Card className="border-warning/30 animate-fade-in">
+              <Card className="border-warning/30 animate-fade-in">
               <CardContent className="p-4">
-                <h2 className="text-sm font-extrabold text-foreground mb-3 flex items-center gap-2">
-                  <Zap className="h-4 w-4 text-warning" /> 🎯 Binary Options — Live OTC Markets
+                <h2 className="text-sm font-extrabold text-foreground mb-2 flex items-center gap-2">
+                  <Zap className="h-4 w-4 text-warning" /> Digital & binary options
                 </h2>
-                <p className="text-xs text-muted-foreground mb-3">OTC assets available 24/7 across Pocket Option, IQ Option, and Binomo — even when main markets are closed.</p>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  {/* Pocket Option */}
-                  <div className="rounded-xl border border-blue-500/30 bg-blue-500/5 p-4 space-y-3">
-                    <div className="flex items-center gap-2">
-                      <span className="text-xl">🔵</span>
-                      <h3 className="font-bold text-foreground text-sm">Pocket Option OTC</h3>
-                    </div>
-                    <div className="space-y-1.5">
-                      {[
-                        { pair: "EUR/USD OTC", payout: "92%", trend: "↑ Bullish" },
-                        { pair: "GBP/USD OTC", payout: "90%", trend: "↓ Bearish" },
-                        { pair: "USD/JPY OTC", payout: "88%", trend: "→ Ranging" },
-                        { pair: "AUD/CAD OTC", payout: "85%", trend: "↑ Bullish" },
-                        { pair: "EUR/GBP OTC", payout: "87%", trend: "↓ Bearish" },
-                        { pair: "NZD/USD OTC", payout: "84%", trend: "→ Ranging" },
-                      ].map(p => (
-                        <div key={p.pair} className="flex items-center justify-between text-xs p-1.5 rounded bg-background/50">
-                          <span className="font-semibold text-foreground">{p.pair}</span>
-                          <span className="text-success font-bold">{p.payout}</span>
-                          <span className="text-muted-foreground text-[10px]">{p.trend}</span>
-                        </div>
-                      ))}
-                    </div>
-                    <Button size="sm" className="w-full text-xs" asChild>
-                      <Link to="/binary-options">View Signals <ArrowRight className="h-3 w-3 ml-1" /></Link>
-                    </Button>
-                  </div>
-
-                  {/* IQ Option */}
-                  <div className="rounded-xl border border-yellow-500/30 bg-yellow-500/5 p-4 space-y-3">
-                    <div className="flex items-center gap-2">
-                      <span className="text-xl">🟡</span>
-                      <h3 className="font-bold text-foreground text-sm">IQ Option OTC</h3>
-                    </div>
-                    <div className="space-y-1.5">
-                      {[
-                        { pair: "EUR/USD OTC", payout: "95%", trend: "↑ Bullish" },
-                        { pair: "GBP/JPY OTC", payout: "90%", trend: "↑ Bullish" },
-                        { pair: "USD/CHF OTC", payout: "88%", trend: "↓ Bearish" },
-                        { pair: "AUD/USD OTC", payout: "87%", trend: "→ Ranging" },
-                        { pair: "EUR/JPY OTC", payout: "91%", trend: "↑ Bullish" },
-                        { pair: "GBP/CAD OTC", payout: "86%", trend: "↓ Bearish" },
-                      ].map(p => (
-                        <div key={p.pair} className="flex items-center justify-between text-xs p-1.5 rounded bg-background/50">
-                          <span className="font-semibold text-foreground">{p.pair}</span>
-                          <span className="text-success font-bold">{p.payout}</span>
-                          <span className="text-muted-foreground text-[10px]">{p.trend}</span>
-                        </div>
-                      ))}
-                    </div>
-                    <Button size="sm" className="w-full text-xs" asChild>
-                      <Link to="/binary-options">View Signals <ArrowRight className="h-3 w-3 ml-1" /></Link>
-                    </Button>
-                  </div>
-
-                  {/* Binomo */}
-                  <div className="rounded-xl border border-purple-500/30 bg-purple-500/5 p-4 space-y-3">
-                    <div className="flex items-center gap-2">
-                      <span className="text-xl">🟣</span>
-                      <h3 className="font-bold text-foreground text-sm">Binomo OTC</h3>
-                    </div>
-                    <div className="space-y-1.5">
-                      {[
-                        { pair: "EUR/USD OTC", payout: "90%", trend: "↑ Bullish" },
-                        { pair: "GBP/USD OTC", payout: "87%", trend: "→ Ranging" },
-                        { pair: "USD/JPY OTC", payout: "85%", trend: "↓ Bearish" },
-                        { pair: "AUD/USD OTC", payout: "83%", trend: "↑ Bullish" },
-                        { pair: "Crypto OTC", payout: "80%", trend: "↑ Bullish" },
-                        { pair: "Commodities OTC", payout: "82%", trend: "→ Ranging" },
-                      ].map(p => (
-                        <div key={p.pair} className="flex items-center justify-between text-xs p-1.5 rounded bg-background/50">
-                          <span className="font-semibold text-foreground">{p.pair}</span>
-                          <span className="text-success font-bold">{p.payout}</span>
-                          <span className="text-muted-foreground text-[10px]">{p.trend}</span>
-                        </div>
-                      ))}
-                    </div>
-                    <Button size="sm" className="w-full text-xs" asChild>
-                      <Link to="/binary-options">View Signals <ArrowRight className="h-3 w-3 ml-1" /></Link>
-                    </Button>
-                  </div>
+                <p className="text-xs leading-5 text-muted-foreground">
+                  Broker-listed OTC assets, payouts, availability and contract conditions can change. Botvio does not display static payout percentages or imply current broker availability here.
+                </p>
+                <div className="mt-4 flex flex-wrap gap-2">
+                  <Button size="sm" asChild><Link to="/binary-options">Open options hub <ArrowRight className="ml-1 h-3 w-3" /></Link></Button>
+                  <Button size="sm" variant="outline" asChild><Link to="/brokers">Check broker platforms <ArrowRight className="ml-1 h-3 w-3" /></Link></Button>
                 </div>
               </CardContent>
             </Card>

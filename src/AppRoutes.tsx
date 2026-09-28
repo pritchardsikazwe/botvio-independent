@@ -301,7 +301,7 @@ export const AppRoutes = () => (
     <Route path="deriv-options" element={<Paid><DerivOptions /></Paid>} />
     <Route path="deriv-app" element={<RequireAuth><DerivApp /></RequireAuth>} />
     <Route path="rise-fall" element={<RequireAuth><RiseFall /></RequireAuth>} />
-    <Route path="binary-options" element={<Paid><BinaryOptions /></Paid>} />
+    <Route path="binary-options" element={<BinaryOptions />} />
     <Route path="brokers" element={<BrokersIndex />} />
     <Route path="brokers/:slug" element={<BrokerPage />} />
     <Route path="live" element={<RequireAuth><LiveFeed /></RequireAuth>} />

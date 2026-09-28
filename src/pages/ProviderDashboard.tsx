@@ -248,6 +248,42 @@ const ProviderDashboard = () => {
           </div>
         </div>
 
+        <Card className="glass-card mb-6 border-primary/20 bg-primary/5">
+          <CardContent className="p-4 md:p-5">
+            <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-wider text-primary">Provider control center</p>
+                <h2 className="mt-1 text-lg font-bold">Run your strategy with clarity</h2>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  Monitor followers, publish trades, review performance and keep your provider account connected.
+                </p>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                <Button size="sm" asChild variant="outline"><Link to="/copy-trading">Marketplace</Link></Button>
+                <Button size="sm" asChild variant="outline"><Link to="/copy-trading/become-provider">Strategy setup</Link></Button>
+              </div>
+            </div>
+            <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-4">
+              <div className="rounded-xl border border-border/60 bg-background/60 p-3">
+                <p className="text-[10px] text-muted-foreground">Provider status</p>
+                <p className="mt-1 text-sm font-semibold capitalize">{myProvider?.status ?? "Loading"}</p>
+              </div>
+              <div className="rounded-xl border border-border/60 bg-background/60 p-3">
+                <p className="text-[10px] text-muted-foreground">Account connection</p>
+                <p className="mt-1 text-sm font-semibold">{hasProviderAccount ? "Connected" : "Needs setup"}</p>
+              </div>
+              <div className="rounded-xl border border-border/60 bg-background/60 p-3">
+                <p className="text-[10px] text-muted-foreground">Followers</p>
+                <p className="mt-1 text-sm font-semibold">{subscriberCount || 0}</p>
+              </div>
+              <div className="rounded-xl border border-border/60 bg-background/60 p-3">
+                <p className="text-[10px] text-muted-foreground">Copy readiness</p>
+                <p className="mt-1 text-sm font-semibold">{myProvider?.status === "approved" && hasProviderAccount ? "Ready" : "Complete setup"}</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Stats */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
           <Card className="glass-card">

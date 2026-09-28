@@ -113,6 +113,30 @@ const BrokersIndex = () => (
         </div>
       </section>
 
+      <section>
+        <div className="mb-4">
+          <h2 className="text-xl font-black">Other platform pages</h2>
+          <p className="mt-1 text-sm text-muted-foreground">These platforms have Botvio information pages. Review the current platform details before connecting or funding an account.</p>
+        </div>
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          {[
+            ["Exness", "/brokers/exness", "Forex, gold and multi-asset trading"],
+            ["Weltrade", "/brokers/weltrade", "MT5 and multi-market trading"],
+            ["Binance", "/brokers/binance", "Crypto trading and market access"],
+            ["Deriv ecosystem", "/brokers/deriv", "Options, synthetic indices and trading workflows"],
+          ].map(([name, path, description]) => (
+            <Link key={path} to={path} className="rounded-xl border border-border/60 bg-card p-4 transition hover:border-primary/50">
+              <div className="flex items-center justify-between gap-2">
+                <h3 className="font-bold">{name}</h3>
+                <ExternalLink className="h-4 w-4 text-muted-foreground" />
+              </div>
+              <p className="mt-2 text-xs leading-5 text-muted-foreground">{description}</p>
+              <Badge variant="outline" className="mt-3 text-[9px]">Platform information</Badge>
+            </Link>
+          ))}
+        </div>
+      </section>
+
       <Card>
         <CardContent className="grid gap-4 p-5 sm:grid-cols-3">
           <Link to="/signals" className="rounded-xl border border-border/60 p-4 transition hover:border-primary/50">

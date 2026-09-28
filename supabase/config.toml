@@ -33,6 +33,8 @@ project_id = "tqqkzeblmjapgbnsbtgw"
     verify_jwt = false
   [functions.bridge-push-state]
     verify_jwt = false
+  [functions.bridge-push-ticks]
+    verify_jwt = false
   [functions.bridge-register-terminal]
     verify_jwt = false
   [functions.deriv-active-symbols]
@@ -57,10 +59,6 @@ project_id = "tqqkzeblmjapgbnsbtgw"
     verify_jwt = false
   [functions.follower-report]
     verify_jwt = false
-  [functions.hauza-sniper]
-    verify_jwt = false
-  [functions.process-email-queue]
-    verify_jwt = true
   [functions.provider-event]
     verify_jwt = false
   [functions.provider-execute-copy]

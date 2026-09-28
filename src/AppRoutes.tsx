@@ -179,7 +179,7 @@ export const AppRoutes = () => (
     <Route path="bridge-request" element={<RequireAuth><BridgeRequest /></RequireAuth>} />
     <Route path="trade-history" element={<RequireAuth><TradeHistory /></RequireAuth>} />
     <Route path="providers" element={<RequireAuth><Providers /></RequireAuth>} />
-    <Route path="copy-trading" element={<RequireAuth><CopyMarketplace /></RequireAuth>} />
+    <Route path="copy-trading" element={<CopyMarketplace />} />
     <Route path="copy-trading/provider/:providerId" element={<CopyProviderProfile />} />
     <Route path="copy-trading/start/:providerId" element={<CopyStart />} />
     <Route path="copy-trading/my" element={<RequireAuth><MyCopyTrading /></RequireAuth>} />

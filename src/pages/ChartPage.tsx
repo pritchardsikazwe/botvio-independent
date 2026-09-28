@@ -1,4 +1,4 @@
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { SEOHead } from "@/components/seo/SEOHead";
@@ -33,6 +33,8 @@ import { useState } from "react";
 const ChartPage = () => {
   const { symbol } = useParams<{ symbol: string }>();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const signalId = searchParams.get("signal");
   const [timeframe, setTimeframe] = useState("1h");
   const [showSessions] = useState(false);
   const [showLevels, setShowLevels] = useState(true);
@@ -77,9 +79,30 @@ const ChartPage = () => {
   });
 
   const { data: signal } = useQuery({
-    queryKey: ["chart-signal", asset?.id],
+    queryKey: ["chart-signal", asset?.id, signalId],
     queryFn: async () => {
       if (!asset) return null;
+
+      // A signal link from the public Signals page carries its real trading_signals ID.
+      // Prefer that exact signal so entry/SL/TP on the chart match the card the user opened.
+      if (signalId) {
+        const { data: manual, error } = await supabase
+          .from("trading_signals")
+          .select("*")
+          .eq("id", signalId)
+          .maybeSingle();
+
+        if (!error && manual) {
+          return {
+            ...manual,
+            signal: String(manual.direction ?? "").toLowerCase() === "sell" ? "sell" : "buy",
+            take_profit_1: manual.take_profit ?? null,
+            take_profit_2: null,
+            ai_summary: manual.reason ?? null,
+          };
+        }
+      }
+
       const { data } = await supabase
         .from("ai_signals")
         .select("*")

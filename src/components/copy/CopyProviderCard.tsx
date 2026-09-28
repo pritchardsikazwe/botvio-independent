@@ -91,6 +91,18 @@ export const CopyProviderCard = ({ data }: { data: CopyProviderCardData }) => {
           )}
         </div>
 
+        <div className="rounded-xl border border-border/60 bg-background/50 p-3">
+          <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Strategy snapshot</p>
+          <div className="mt-2 flex items-center gap-2 text-xs text-muted-foreground">
+            <Layers className="h-3.5 w-3.5 text-primary" />
+            <span className="truncate">{data.marketLabel || "Multi-market strategy"}</span>
+          </div>
+          <div className="mt-2 flex items-center gap-1.5 text-[11px] text-muted-foreground">
+            <span className="h-1.5 w-1.5 rounded-full bg-primary" />
+            {data.live ? "Currently publishing activity" : "No active strategy feed"}
+          </div>
+        </div>
+
         <div className="grid grid-cols-3 gap-2 text-center">
           <div className="rounded-lg bg-muted/40 p-2">
             <p
@@ -126,10 +138,10 @@ export const CopyProviderCard = ({ data }: { data: CopyProviderCardData }) => {
 
         <div className="mt-auto grid grid-cols-2 gap-2">
           <Button variant="outline" size="sm" asChild>
-            <Link to={`/copy-trading/provider/${data.providerId}`}>View</Link>
+            <Link to={`/copy-trading/provider/${data.providerId}`}>Review strategy <ArrowUpRight className="ml-1 h-3.5 w-3.5" /></Link>
           </Button>
           <Button size="sm" asChild>
-            <Link to={`/copy-trading/start/${data.providerId}`}>Copy</Link>
+            <Link to={`/copy-trading/start/${data.providerId}`}>Set up copy <ArrowUpRight className="ml-1 h-3.5 w-3.5" /></Link>
           </Button>
         </div>
       </CardContent>

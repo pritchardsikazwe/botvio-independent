@@ -30,8 +30,6 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, ExternalLink, TrendingUp, TrendingDown, Target, Shield, BarChart3, Activity, Newspaper, Clock, BookOpen } from "lucide-react";
 import { useState } from "react";
 
-const EXNESS_LINK = "https://one.exness-track.com/a/ts1kvs1k";
-
 const ChartPage = () => {
   const { symbol } = useParams<{ symbol: string }>();
   const navigate = useNavigate();
@@ -365,17 +363,17 @@ const ChartPage = () => {
         )}
       </main>
 
-      {/* ── Sticky Mobile CTA ─────────────────────── */}
-      <div className="fixed bottom-0 left-0 right-0 lg:hidden z-50 p-3 bg-background/95 backdrop-blur-sm border-t border-border/50">
-        <a href={EXNESS_LINK} target="_blank" rel="noopener noreferrer">
-          <Button className="w-full bg-warning hover:bg-warning/90 text-warning-foreground font-extrabold h-12 text-sm shadow-lg shadow-warning/20">
-            <ExternalLink className="h-4 w-4 mr-2" />
-            Trade on Exness
+      {/* ── Contextual Mobile CTA ─────────────────────── */}
+      <div className="fixed bottom-0 left-0 right-0 lg:hidden z-40 p-3 bg-background/95 backdrop-blur-sm border-t border-border/50">
+        <div className="flex gap-2">
+          <Button variant="outline" className="flex-1 h-11 text-xs font-semibold" onClick={() => navigate("/signals")}>
+            View Signals
           </Button>
-        </a>
+          <Button className="flex-1 h-11 text-xs font-bold" onClick={() => navigate("/brokers")}>
+            Check Brokers
+          </Button>
+        </div>
       </div>
-
-      {/* Bottom padding for sticky CTA on mobile */}
       <div className="h-20 lg:hidden" />
     </div>
   );

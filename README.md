@@ -1,73 +1,117 @@
-# Welcome to your Lovable project
+# Botvio — Portable Hosting Copy
 
-## Project info
+This branch is a clean, provider-neutral copy of the Botvio web application.
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+## What is included
 
-## How can I edit this code?
+- React + TypeScript application
+- Vite production build
+- Botvio public pages, dashboards and features
+- Supabase client integration
+- PWA assets
+- SEO files and static assets
+- MT5 Bridge EA file
 
-There are several ways of editing your application.
+## What is intentionally excluded
 
-**Use Lovable**
+- Lovable project metadata
+- Lovable-only build plugins
+- GitHub Actions workflows
+- Local `.env` secrets
+- Development-only prewarm files
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
+The application remains connected to Supabase through environment variables. **Do not put Supabase secrets into GitHub or the hosting package.**
 
-Changes made via Lovable will be committed automatically to this repo.
+## Requirements
 
-**Use your preferred IDE**
+- Node.js 20+ recommended
+- npm 10+ or another compatible package manager
+- A Supabase project containing the Botvio database/authentication
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+## 1. Configure environment
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+Copy `.env.example` to `.env`:
 
-Follow these steps:
+```bash
+cp .env.example .env
+```
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+Set:
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+```env
+VITE_SUPABASE_URL=https://YOUR_PROJECT_REF.supabase.co
+VITE_SUPABASE_PUBLISHABLE_KEY=YOUR_SUPABASE_PUBLISHABLE_KEY
+VITE_GA_ID=
+```
 
-# Step 3: Install the necessary dependencies.
-npm i
+Use the existing Botvio production Supabase project if you want the existing users/data. Do not create a new database unless you intentionally want a separate Botvio installation.
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+## 2. Install
+
+```bash
+npm install
+```
+
+## 3. Test locally
+
+```bash
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+## 4. Build for production
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+```bash
+npm run build
+```
 
-**Use GitHub Codespaces**
+The finished website is created in:
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+```
+dist/
+```
 
-## What technologies are used for this project?
+## 5. Deploy to normal web hosting
 
-This project is built with:
+For cPanel/Namecheap/Apache hosting:
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+1. Run `npm install` and `npm run build` on your computer or build server.
+2. Upload the **contents of `dist/`** into the domain's `public_html` folder.
+3. Keep the included `.htaccess` file.
+4. Confirm the domain uses HTTPS.
+5. Configure the Supabase authentication redirect URLs for the new domain.
 
-## How can I deploy this project?
+The application is a client-side SPA, so the server must send unknown application routes back to `index.html`.
 
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
+## 6. Deploy to Cloudflare Pages or similar static hosting
 
-## Can I connect a custom domain to my Lovable project?
+Use:
 
-Yes, you can!
+- Build command: `npm run build`
+- Output directory: `dist`
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+Set the same `VITE_*` environment variables in the hosting provider.
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+## 7. Deploy to a VPS
+
+Build the project and serve `dist/` with Nginx or Apache. Do not run the Vite development server as the public production server.
+
+## Authentication
+
+For a new domain, add the domain to the Supabase project's:
+
+- Site URL
+- Redirect URLs
+
+Also configure Google OAuth redirect URLs if Google sign-in is enabled.
+
+## Important
+
+This branch is the portable hosting copy. The GitHub `main` branch remains the source/development copy.
+
+Never commit:
+
+- `.env`
+- service-role keys
+- database passwords
+- private API tokens
+

@@ -126,6 +126,11 @@ import AfricaMarket from "./pages/markets/AfricaMarket";
 import BrokerPage from "./pages/BrokerPage";
 import BrokersIndex from "./pages/BrokersIndex";
 import BinaryOptions from "./pages/BinaryOptions";
+import PocketOption from "./pages/PocketOption";
+import Quotex from "./pages/Quotex";
+import Olymptrade from "./pages/Olymptrade";
+import Binomo from "./pages/Binomo";
+import IQOption from "./pages/IQOption";
 import LiveFeed from "./pages/LiveFeed";
 import FlippingChallenges from "./pages/FlippingChallenges";
 import ResetPassword from "./pages/ResetPassword";
@@ -302,6 +307,11 @@ export const AppRoutes = () => (
     <Route path="deriv-app" element={<RequireAuth><DerivApp /></RequireAuth>} />
     <Route path="rise-fall" element={<RequireAuth><RiseFall /></RequireAuth>} />
     <Route path="binary-options" element={<BinaryOptions />} />
+    <Route path="brokers/pocket-option" element={<PocketOption />} />
+    <Route path="brokers/quotex" element={<Quotex />} />
+    <Route path="brokers/olymptrade" element={<Olymptrade />} />
+    <Route path="brokers/binomo" element={<Binomo />} />
+    <Route path="brokers/iq-option" element={<IQOption />} />
     <Route path="brokers" element={<BrokersIndex />} />
     <Route path="brokers/:slug" element={<BrokerPage />} />
     <Route path="live" element={<RequireAuth><LiveFeed /></RequireAuth>} />

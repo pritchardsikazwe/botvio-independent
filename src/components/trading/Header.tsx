@@ -262,6 +262,14 @@ export const Header = () => {
                     <Wallet className="w-4 h-4 mr-2" />
                     Trading Accounts
                   </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => navigate('/copy-trading/my')}>
+                    <Users className="w-4 h-4 mr-2" />
+                    My Copy Trading
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => navigate('/provider-dashboard')}>
+                    <TrendingUp className="w-4 h-4 mr-2" />
+                    Provider Dashboard
+                  </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => navigate('/trade-history')}>
                     <BarChart3 className="w-4 h-4 mr-2" />
                     Trade History

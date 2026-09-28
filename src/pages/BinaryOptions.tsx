@@ -1,255 +1,308 @@
 import { Link } from "react-router-dom";
 import { useEffect } from "react";
-import { TopAssetsWidget } from "@/components/trading/TopAssetsWidget";
 import { Header } from "@/components/trading/Header";
 import { SEOHead } from "@/components/seo/SEOHead";
-import { useSignalBrokers, SignalBroker } from "@/hooks/useSignalBrokers";
 import { useManualSignals, ManualSignal } from "@/hooks/useManualSignals";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ExternalLink, TrendingUp, TrendingDown, Shield, Zap, Star, ArrowRight, Activity, Clock } from "lucide-react";
+import {
+  Activity,
+  ArrowRight,
+  BarChart3,
+  BookOpen,
+  CheckCircle2,
+  Clock,
+  ExternalLink,
+  Shield,
+  Target,
+  TrendingDown,
+  TrendingUp,
+  Zap,
+} from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
 
-const BROKER_DETAILS: Record<string, { emoji: string; color: string; features: string[]; minDeposit: string; payout: string }> = {
-  "deriv": { emoji: "🔴", color: "border-destructive/40", features: ["Synthetic Indices", "Boom & Crash", "Volatility Index", "24/7 Trading"], minDeposit: "$5", payout: "Up to 95%" },
-  "pocket-option": { emoji: "🔵", color: "border-blue-500/40", features: ["OTC Markets", "1-Min Trades", "Social Trading", "50+ Assets"], minDeposit: "$5", payout: "Up to 92%" },
-  
-  "iq-option": { emoji: "🟡", color: "border-yellow-500/40", features: ["300+ Assets", "Tournaments", "Education Hub", "Multi-Chart"], minDeposit: "$10", payout: "Up to 95%" },
-  "binomo": { emoji: "🟣", color: "border-purple-500/40", features: ["Easy Interface", "Low Entry", "Quick Trades", "Mobile App"], minDeposit: "$10", payout: "Up to 90%" },
-};
+const CONTRACT_TYPES = [
+  {
+    title: "Rise / Fall",
+    description: "Predict whether the market will finish above or below the entry price at expiry.",
+    icon: TrendingUp,
+    link: "/rise-fall",
+  },
+  {
+    title: "Higher / Lower",
+    description: "Set a barrier and assess whether the final price will be higher or lower.",
+    icon: Target,
+    link: "/deriv-options",
+  },
+  {
+    title: "Touch / No Touch",
+    description: "Assess whether price will touch a defined barrier during the contract period.",
+    icon: Zap,
+    link: "/deriv-options",
+  },
+  {
+    title: "Range contracts",
+    description: "Explore contracts based on whether price stays inside or moves outside defined barriers.",
+    icon: BarChart3,
+    link: "/deriv-options",
+  },
+];
 
-/** Mini signal row for inline display */
-const MiniSignalRow = ({ signal }: { signal: ManualSignal }) => {
-  const isBuy = signal.direction === "BUY";
-  const timeAgo = getTimeAgo(signal.created_at);
+const MARKET_TYPES = [
+  "Forex",
+  "Stock indices",
+  "Commodities",
+  "Cryptocurrencies",
+  "Derived / Synthetic Indices",
+];
 
-  return (
-    <div className="flex items-center justify-between gap-2 py-1.5 border-b border-border/30 last:border-0">
-      <div className="flex items-center gap-2 min-w-0">
-        <Badge className={`text-[10px] px-1.5 py-0 ${isBuy ? "bg-success/20 text-success border-success/30" : "bg-destructive/20 text-destructive border-destructive/30"}`}>
-          {isBuy ? <TrendingUp className="h-2.5 w-2.5 mr-0.5" /> : <TrendingDown className="h-2.5 w-2.5 mr-0.5" />}
-          {signal.direction}
-        </Badge>
-        <span className="font-semibold text-xs truncate">{signal.symbol}</span>
-      </div>
-      <div className="flex items-center gap-2 shrink-0">
-        <span className="text-[10px] text-muted-foreground">{signal.entry_price}</span>
-        <Badge variant="outline" className="text-[9px] px-1 py-0">
-          {signal.confidence ? `${signal.confidence}%` : signal.timeframe}
-        </Badge>
-        <span className="text-[9px] text-muted-foreground flex items-center gap-0.5">
-          <Clock className="h-2.5 w-2.5" />{timeAgo}
-        </span>
-      </div>
-    </div>
-  );
-};
-
-function getTimeAgo(dateStr: string): string {
-  const diff = Date.now() - new Date(dateStr).getTime();
+function timeAgo(dateStr: string) {
+  const diff = Math.max(0, Date.now() - new Date(dateStr).getTime());
   const mins = Math.floor(diff / 60000);
   if (mins < 1) return "now";
   if (mins < 60) return `${mins}m`;
-  const hrs = Math.floor(mins / 60);
-  if (hrs < 24) return `${hrs}h`;
-  return `${Math.floor(hrs / 24)}d`;
+  const hours = Math.floor(mins / 60);
+  if (hours < 24) return `${hours}h`;
+  return `${Math.floor(hours / 24)}d`;
 }
 
-const BrokerCardWithSignals = ({ broker, signals }: { broker: SignalBroker; signals: ManualSignal[] }) => {
-  const details = BROKER_DETAILS[broker.slug] || { emoji: "⚪", color: "border-border", features: [], minDeposit: "—", payout: "—" };
-  const brokerSignals = signals.filter(s => s.broker?.includes(broker.slug));
-  const activeSignals = brokerSignals.filter(s => s.status === "ACTIVE");
-
+function SignalRow({ signal }: { signal: ManualSignal }) {
+  const isBuy = signal.direction === "BUY";
   return (
-    <Card className={`glass-card ${details.color} hover:shadow-lg transition-all`}>
-      <CardHeader className="pb-3">
-        <div className="flex items-center justify-between">
-          <CardTitle className="text-lg flex items-center gap-2">
-            <span className="text-2xl">{details.emoji}</span>
-            {broker.name}
-          </CardTitle>
-          <div className="flex items-center gap-1.5">
-            {activeSignals.length > 0 && (
-              <Badge className="bg-success/20 text-success border-success/30 text-[10px] animate-pulse">
-                <Activity className="h-2.5 w-2.5 mr-0.5" />
-                {activeSignals.length} Live
-              </Badge>
-            )}
-            {broker.best_for && (
-              <Badge variant="outline" className="text-[10px]">{broker.best_for}</Badge>
-            )}
-          </div>
+    <Link
+      to={`/chart/${encodeURIComponent(signal.symbol)}?signal=${encodeURIComponent(signal.id)}`}
+      className="block rounded-xl border border-border/50 bg-card/60 p-3 hover:border-primary/50 transition-colors"
+    >
+      <div className="flex items-center justify-between gap-3">
+        <div className="min-w-0 flex items-center gap-2">
+          <Badge className={isBuy ? "bg-success/15 text-success border-success/30" : "bg-destructive/15 text-destructive border-destructive/30"}>
+            {isBuy ? <TrendingUp className="h-3 w-3 mr-1" /> : <TrendingDown className="h-3 w-3 mr-1" />}
+            {signal.direction}
+          </Badge>
+          <span className="font-semibold truncate">{signal.symbol}</span>
         </div>
-        {broker.description && (
-          <p className="text-sm text-muted-foreground">{broker.description}</p>
-        )}
-      </CardHeader>
-      <CardContent className="space-y-4">
-        {/* Live Signals Section */}
-        {activeSignals.length > 0 ? (
-          <div className="rounded-lg bg-muted/20 border border-border/40 p-3">
-            <div className="flex items-center justify-between mb-2">
-              <p className="text-xs font-semibold flex items-center gap-1">
-                <Activity className="h-3 w-3 text-success" /> Live Signals
-              </p>
-              <Link to={`/brokers/${broker.slug}`} className="text-[10px] text-primary hover:underline">
-                View all →
-              </Link>
-            </div>
-            <div className="space-y-0">
-              {activeSignals.slice(0, 3).map((signal) => (
-                <MiniSignalRow key={signal.id} signal={signal} />
-              ))}
-              {activeSignals.length > 3 && (
-                <p className="text-[10px] text-muted-foreground text-center pt-1">
-                  +{activeSignals.length - 3} more signals
-                </p>
-              )}
-            </div>
-          </div>
-        ) : (
-          <div className="rounded-lg bg-muted/10 border border-dashed border-border/40 p-3 text-center">
-            <p className="text-xs text-muted-foreground">No active signals — check back soon</p>
-          </div>
-        )}
-
-        {/* Key Stats */}
-        <div className="grid grid-cols-2 gap-2">
-          <div className="rounded-lg bg-muted/30 p-2 text-center">
-            <p className="text-xs text-muted-foreground">Min Deposit</p>
-            <p className="font-bold text-sm">{details.minDeposit}</p>
-          </div>
-          <div className="rounded-lg bg-muted/30 p-2 text-center">
-            <p className="text-xs text-muted-foreground">Payout</p>
-            <p className="font-bold text-sm text-success">{details.payout}</p>
-          </div>
-        </div>
-
-        {/* Features */}
-        <div className="flex flex-wrap gap-1">
-          {details.features.map((f) => (
-            <Badge key={f} variant="secondary" className="text-[10px]">{f}</Badge>
-          ))}
-        </div>
-
-        {/* Actions */}
-        <div className="flex gap-2">
-          <Button className="flex-1" asChild>
-            <a href={broker.affiliate_url} target="_blank" rel="noopener noreferrer">
-              <ExternalLink className="h-3.5 w-3.5 mr-1.5" />
-              Trade Now
-            </a>
-          </Button>
-          <Button variant="outline" className="flex-1" asChild>
-            <Link to={`/brokers/${broker.slug}`}>
-              Signals & Strategies <ArrowRight className="h-3.5 w-3.5 ml-1" />
-            </Link>
-          </Button>
-        </div>
-      </CardContent>
-    </Card>
+        <span className="text-xs text-muted-foreground flex items-center gap-1 shrink-0">
+          <Clock className="h-3 w-3" /> {timeAgo(signal.created_at)}
+        </span>
+      </div>
+      <div className="mt-2 grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
+        <span><span className="text-muted-foreground">Entry:</span> {signal.entry_price ?? "—"}</span>
+        <span><span className="text-muted-foreground">TF:</span> {signal.timeframe ?? "—"}</span>
+        <span><span className="text-muted-foreground">Confidence:</span> {signal.confidence ? `${signal.confidence}%` : "—"}</span>
+        <span className="text-primary text-right">Open chart →</span>
+      </div>
+    </Link>
   );
-};
+}
 
-const BinaryOptions = () => {
-  const { data: brokers, isLoading: brokersLoading } = useSignalBrokers();
-  const { data: signals = [], isLoading: signalsLoading } = useManualSignals({ status: "ACTIVE" });
+export default function BinaryOptions() {
+  const { data: signals = [], isLoading } = useManualSignals({ status: "ACTIVE" });
   const queryClient = useQueryClient();
 
-  // Realtime subscription for live signal updates
   useEffect(() => {
     const channel = supabase
-      .channel("binary-signals-live")
-      .on("postgres_changes", { event: "*", schema: "public", table: "trading_signals" }, () => {
-        queryClient.invalidateQueries({ queryKey: ["manual-signals"] });
-      })
+      .channel("binary-options-live-signals")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "trading_signals" },
+        () => queryClient.invalidateQueries({ queryKey: ["manual-signals"] }),
+      )
       .subscribe();
-    return () => { supabase.removeChannel(channel); };
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [queryClient]);
 
-  const isLoading = brokersLoading || signalsLoading;
-  const totalActive = signals.filter(s => s.status === "ACTIVE").length;
+  const activeSignals = signals.filter((s) => s.status === "ACTIVE").slice(0, 8);
 
   return (
     <div className="min-h-screen bg-background">
-      <SEOHead seoKey="binary"
-        title="Binary Options Brokers — Live Signals & Compare"
-        description="Compare the best binary options brokers with live trading signals. Find the right platform for synthetic indices, OTC markets, forex, and crypto binary trading."
+      <SEOHead
+        seoKey="binary-options"
+        title="Binary Options Trading Hub — Signals, Strategies & Education | Botvio"
+        description="Learn digital and binary options, explore Rise/Fall and other contract types, review market signals and understand the risks before trading."
       />
       <Header />
 
-      <main className="container mx-auto px-4 py-6">
-        {/* Hero */}
-        <div className="glass-card p-6 mb-6 text-center">
-          <h1 className="text-3xl font-extrabold mb-2">🎯 Binary Options Brokers</h1>
-          <p className="text-muted-foreground max-w-2xl mx-auto">
-            Choose your preferred broker and start trading binary options with live signals, AI analysis, and proven strategies.
-          </p>
-        </div>
-
-        {/* Stats Strip */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
-          <Card className="glass-card text-center p-4">
-            <Activity className="h-5 w-5 text-success mx-auto mb-1" />
-            <p className="text-xl font-bold">{totalActive}</p>
-            <p className="text-xs text-muted-foreground">Live Signals</p>
-          </Card>
-          <Card className="glass-card text-center p-4">
-            <TrendingUp className="h-5 w-5 text-primary mx-auto mb-1" />
-            <p className="text-xl font-bold">{brokers?.length || 0}</p>
-            <p className="text-xs text-muted-foreground">Supported Brokers</p>
-          </Card>
-          <Card className="glass-card text-center p-4">
-            <Zap className="h-5 w-5 text-warning mx-auto mb-1" />
-            <p className="text-xl font-bold">24/7</p>
-            <p className="text-xs text-muted-foreground">Trading Available</p>
-          </Card>
-          <Card className="glass-card text-center p-4">
-            <Shield className="h-5 w-5 text-primary mx-auto mb-1" />
-            <p className="text-xl font-bold">AI</p>
-            <p className="text-xs text-muted-foreground">Smart Routing</p>
-          </Card>
-        </div>
-
-        {/* Broker Cards with Live Signals */}
-        {isLoading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[1, 2, 3, 4, 5].map((i) => (
-              <Card key={i} className="glass-card animate-pulse">
-                <CardContent className="p-6"><div className="h-64 bg-muted/30 rounded-lg" /></CardContent>
-              </Card>
-            ))}
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {(brokers || []).map((broker) => (
-              <BrokerCardWithSignals key={broker.id} broker={broker} signals={signals} />
-            ))}
-          </div>
-        )}
-
-        {/* Top 5 Assets Today */}
-        <div className="mt-8">
-          <TopAssetsWidget />
-        </div>
-
-        {/* CTA */}
-        <Card className="glass-card mt-8 border-primary/30">
-          <CardContent className="py-6 text-center">
-            <h3 className="font-bold text-lg mb-2">Need Help Choosing?</h3>
-            <p className="text-sm text-muted-foreground mb-4">
-              Our AI signal router automatically picks the best broker for each trade based on asset type and market conditions.
+      <main className="container mx-auto px-4 py-6 md:py-10">
+        <section className="rounded-3xl border border-primary/20 bg-gradient-to-br from-primary/10 via-background to-background p-6 md:p-10 mb-8">
+          <Badge variant="outline" className="mb-4">OPTIONS TRADING HUB</Badge>
+          <div className="max-w-3xl">
+            <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight">
+              Binary & Digital Options
+            </h1>
+            <p className="mt-4 text-base md:text-lg text-muted-foreground leading-relaxed">
+              A practical starting point for traders looking for short-duration, fixed-outcome
+              option contracts. Learn the contract types, inspect market conditions and use
+              Botvio signals as analysis rather than as a guarantee of an outcome.
             </p>
-            <Button asChild>
-              <Link to="/signals">View All Signals <ArrowRight className="h-4 w-4 ml-2" /></Link>
-            </Button>
-          </CardContent>
-        </Card>
+            <div className="flex flex-col sm:flex-row gap-3 mt-6">
+              <Button asChild size="lg">
+                <Link to="/signals">Explore live signals <ArrowRight className="ml-2 h-4 w-4" /></Link>
+              </Button>
+              <Button asChild variant="outline" size="lg">
+                <Link to="/learn">Learn before trading <BookOpen className="ml-2 h-4 w-4" /></Link>
+              </Button>
+            </div>
+          </div>
+        </section>
+
+        <section className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-8">
+          <Card className="lg:col-span-2">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <BookOpen className="h-5 w-5 text-primary" /> How options work
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3 text-sm text-muted-foreground leading-relaxed">
+              <p>
+                Digital options are time-bound contracts where the trader selects a market,
+                contract condition, duration and stake. The result depends on whether the
+                specified condition is satisfied at expiry or during the contract.
+              </p>
+              <p>
+                This is different from CFD trading: the contract has defined terms and the
+                maximum loss on a digital option can be limited to the amount staked, subject
+                to the product's rules.
+              </p>
+              <p>
+                Contract availability, payout, duration and market availability can vary by
+                platform and jurisdiction. Always verify the current terms on the trading
+                platform before placing an order.
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card className="border-destructive/30">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-base">
+                <Shield className="h-5 w-5 text-destructive" /> Risk first
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="text-sm text-muted-foreground leading-relaxed">
+              Options can expire out of the money and the initial stake can be lost.
+              Very short durations make timing and market noise especially important.
+              Botvio does not guarantee profitable trades.
+            </CardContent>
+          </Card>
+        </section>
+
+        <section className="mb-8">
+          <div className="flex items-end justify-between gap-3 mb-4">
+            <div>
+              <h2 className="text-2xl font-bold">Contract types</h2>
+              <p className="text-sm text-muted-foreground mt-1">Start with the contract mechanics, then choose a strategy.</p>
+            </div>
+            <Link to="/deriv-options" className="text-sm text-primary hover:underline">All options →</Link>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {CONTRACT_TYPES.map((item) => {
+              const Icon = item.icon;
+              return (
+                <Card key={item.title} className="h-full hover:border-primary/40 transition-colors">
+                  <CardContent className="p-5">
+                    <Icon className="h-6 w-6 text-primary mb-3" />
+                    <h3 className="font-semibold">{item.title}</h3>
+                    <p className="text-sm text-muted-foreground mt-2 leading-relaxed">{item.description}</p>
+                    <Button variant="ghost" className="px-0 mt-3" asChild>
+                      <Link to={item.link}>Learn more <ArrowRight className="ml-1 h-4 w-4" /></Link>
+                    </Button>
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
+        </section>
+
+        <section className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Activity className="h-5 w-5 text-primary" /> Active Botvio market signals
+              </CardTitle>
+              <p className="text-sm text-muted-foreground">
+                Signals are market analysis. They are not binary-option trade instructions and do not guarantee expiry outcomes.
+              </p>
+            </CardHeader>
+            <CardContent className="space-y-2">
+              {isLoading ? (
+                <div className="h-32 rounded-xl bg-muted/30 animate-pulse" />
+              ) : activeSignals.length ? (
+                activeSignals.map((signal) => <SignalRow key={signal.id} signal={signal} />)
+              ) : (
+                <div className="rounded-xl border border-dashed p-6 text-center text-sm text-muted-foreground">
+                  No active public signals right now.
+                </div>
+              )}
+              <Button variant="outline" className="w-full mt-2" asChild>
+                <Link to="/signals">Open full signal terminal <ArrowRight className="ml-2 h-4 w-4" /></Link>
+              </Button>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Markets commonly used for options</CardTitle>
+              <p className="text-sm text-muted-foreground">Availability depends on the platform and account.</p>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-2 gap-3">
+                {MARKET_TYPES.map((market) => (
+                  <div key={market} className="rounded-xl border bg-muted/20 p-3 flex items-center gap-2 text-sm">
+                    <CheckCircle2 className="h-4 w-4 text-primary shrink-0" />
+                    {market}
+                  </div>
+                ))}
+              </div>
+              <div className="mt-5 rounded-xl bg-muted/30 p-4 text-sm text-muted-foreground">
+                <strong className="text-foreground">Deriv focus:</strong> Deriv currently offers
+                digital options including Rise/Fall, Higher/Lower and Touch/No Touch across
+                multiple market categories. Check the live platform for the instruments and
+                terms available to your account.
+              </div>
+              <Button className="w-full mt-4" asChild>
+                <a href="https://deriv.com/trade/options" target="_blank" rel="noopener noreferrer">
+                  View Deriv options <ExternalLink className="ml-2 h-4 w-4" />
+                </a>
+              </Button>
+            </CardContent>
+          </Card>
+        </section>
+
+        <section className="mb-8">
+          <Card>
+            <CardHeader>
+              <CardTitle>Before placing a short-duration trade</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                {[
+                  ["1", "Identify the market", "Check the actual asset, price feed and current market session."],
+                  ["2", "Define the condition", "Know exactly what must happen, the expiry and any barrier before entering."],
+                  ["3", "Control the stake", "Use a stake size you can afford to lose and avoid increasing it to recover losses."],
+                ].map(([number, title, description]) => (
+                  <div key={number} className="rounded-xl border p-4">
+                    <Badge className="mb-3">{number}</Badge>
+                    <h3 className="font-semibold">{title}</h3>
+                    <p className="text-muted-foreground mt-2 leading-relaxed">{description}</p>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </section>
+
+        <section className="rounded-2xl border border-border/60 p-5 text-sm text-muted-foreground leading-relaxed">
+          <strong className="text-foreground">Important:</strong> Trading derivatives and digital
+          options involves significant risk. Product rules, availability, payouts and legal
+          restrictions vary by provider and country. This page is educational and does not
+          constitute financial advice. If a broker link on Botvio is an affiliate link, that
+          relationship will be disclosed near the relevant call to action.
+        </section>
       </main>
     </div>
   );
-};
-
-export default BinaryOptions;
+}

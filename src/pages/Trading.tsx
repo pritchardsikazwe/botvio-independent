@@ -46,18 +46,8 @@ const Trading = () => {
     }
   }, [lastTick]);
 
-  useEffect(() => {
-    if (authorized) return;
-    const interval = setInterval(() => {
-      setMarketData(prev => ({
-        ...prev,
-        price: prev.price + (Math.random() - 0.5) * 2,
-        change24h: prev.change24h + (Math.random() - 0.5) * 0.1,
-      }));
-    }, 2000);
-    return () => clearInterval(interval);
-  }, [authorized]);
-
+  // Never simulate price movement in the trading workspace. When no live feed is
+  // connected, the UI keeps the last known value and labels the feed as unavailable.
   const handleSymbolChange = (derivSymbol: string) => {
     let displayPair = derivSymbol;
     if (derivSymbol.startsWith("frx")) displayPair = derivSymbol.replace("frx", "");

@@ -40,12 +40,15 @@ export const Header = () => {
 
   return (
     <>
+      <a href="#main-content" className="sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-[100] focus:rounded-lg focus:bg-background focus:px-4 focus:py-3 focus:text-sm focus:font-semibold focus:text-foreground focus:ring-2 focus:ring-primary">Skip to main content</a>
       <header className="sticky top-0 z-50 glass-card border-b border-border/50 backdrop-blur-xl">
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <div 
-              className="flex items-center gap-3 cursor-pointer"
-              onClick={() => navigate('/')}
+            <button
+              type="button"
+              aria-label="Go to Botvio home"
+              className="flex items-center gap-3 cursor-pointer rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+              onClick={() => navigate("/")}
             >
               <div className="w-10 h-10 rounded-xl overflow-hidden bg-background flex items-center justify-center border border-border/50">
                 <img
@@ -60,7 +63,7 @@ export const Header = () => {
                 <span className="font-bold text-lg gold-text block">BOTVIO</span>
                 <p className="text-[10px] text-muted-foreground">powered by Deriv</p>
               </div>
-            </div>
+            </button>
 
             {/* Navigation - Desktop (Botvio information architecture) */}
             <nav className="hidden xl:flex items-center gap-0.5" aria-label="Primary navigation">
@@ -156,21 +159,21 @@ export const Header = () => {
             </nav>
 
             {/* Compact navigation - tablet & mobile */}
-            <nav className="xl:hidden flex items-center" aria-label="Primary navigation">
+            <nav className="hidden md:flex xl:hidden items-center" aria-label="Compact navigation">
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" size="sm" aria-label="Open navigation menu">
                     <Menu className="w-4 h-4" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-64 glass-card max-h-[80vh] overflow-y-auto">
-                  <DropdownMenuItem onClick={() => navigate('/')}>Home</DropdownMenuItem>
+                <DropdownMenuContent className="w-72 glass-card max-h-[80vh] overflow-y-auto">
+                  <DropdownMenuItem className="min-h-11" onClick={() => navigate("/")}>Home</DropdownMenuItem>
                   {PRIMARY_NAV.map((group) => (
                     <div key={group.label}>
                       <DropdownMenuSeparator />
                       <DropdownMenuLabel>{group.label}</DropdownMenuLabel>
                       {(group.items ?? [{ label: group.label, to: group.to!, icon: group.icon }]).map((item) => (
-                        <DropdownMenuItem key={`${group.label}-${item.to}`} onClick={() => navigate(item.to)}>
+                        <DropdownMenuItem key={`${group.label}-${item.to}`} className="min-h-11" onClick={() => navigate(item.to)}>
                           {item.icon && <item.icon className="w-4 h-4 mr-2 text-primary" />}
                           {item.label}
                         </DropdownMenuItem>

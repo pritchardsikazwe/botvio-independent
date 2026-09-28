@@ -199,8 +199,8 @@ export const AppRoutes = () => (
     <Route path="s/:slug" element={<StrategyDetail />} />
     <Route path="strategies/:category/:slug" element={<StrategyDetail />} />
     <Route path="r/:code" element={<ReferralRedirect />} />
-    <Route path="signals" element={<Paid><Signals /></Paid>} />
-    <Route path="market-analysis" element={<Paid><MarketAnalysis /></Paid>} />
+    <Route path="signals" element={<Signals />} />
+    <Route path="market-analysis" element={<MarketAnalysis />} />
     <Route path="signals/history" element={<Paid><SignalsHistory /></Paid>} />
     <Route path="signals-history" element={<Paid><SignalsHistory /></Paid>} />
     <Route path="track-record" element={<Paid><SignalsHistory /></Paid>} />
@@ -235,34 +235,34 @@ export const AppRoutes = () => (
     <Route path="auth/deriv/callback" element={<DerivCallback />} />
     <Route path="callback" element={<DerivCallback />} />
     <Route path="trading" element={<Paid><Trading /></Paid>} />
-    <Route path="chart/:symbol" element={<Paid><ChartPage /></Paid>} />
-    <Route path="gold" element={<Paid><GoldTradingHub /></Paid>} />
-    <Route path="bitcoin" element={<Paid><BitcoinTradingHub /></Paid>} />
-    <Route path="btc" element={<Paid><BitcoinTradingHub /></Paid>} />
-    <Route path="silver" element={<Paid><SilverTradingHub /></Paid>} />
-    <Route path="xag" element={<Paid><SilverTradingHub /></Paid>} />
+    <Route path="chart/:symbol" element={<ChartPage />} />
+    <Route path="gold" element={<GoldTradingHub />} />
+    <Route path="bitcoin" element={<BitcoinTradingHub />} />
+    <Route path="btc" element={<BitcoinTradingHub />} />
+    <Route path="silver" element={<SilverTradingHub />} />
+    <Route path="xag" element={<SilverTradingHub />} />
     <Route path="gbpusd" element={<Navigate to="/gbp-usd" replace />} />
-    <Route path="gbp-usd" element={<Paid><GbpUsdTradingHub /></Paid>} />
+    <Route path="gbp-usd" element={<GbpUsdTradingHub />} />
 
     {/* Additional forex pair hubs */}
     <Route path="eurusd" element={<Navigate to="/eur-usd" replace />} />
-    <Route path="eur-usd" element={<Paid><EurUsdHub /></Paid>} />
+    <Route path="eur-usd" element={<EurUsdHub />} />
     <Route path="usdjpy" element={<Navigate to="/usd-jpy" replace />} />
-    <Route path="usd-jpy" element={<Paid><UsdJpyHub /></Paid>} />
+    <Route path="usd-jpy" element={<UsdJpyHub />} />
     <Route path="audusd" element={<Navigate to="/aud-usd" replace />} />
-    <Route path="aud-usd" element={<Paid><AudUsdHub /></Paid>} />
+    <Route path="aud-usd" element={<AudUsdHub />} />
     <Route path="usdcad" element={<Navigate to="/usd-cad" replace />} />
-    <Route path="usd-cad" element={<Paid><UsdCadHub /></Paid>} />
+    <Route path="usd-cad" element={<UsdCadHub />} />
     <Route path="usdchf" element={<Navigate to="/usd-chf" replace />} />
-    <Route path="usd-chf" element={<Paid><UsdChfHub /></Paid>} />
+    <Route path="usd-chf" element={<UsdChfHub />} />
     <Route path="eurgbp" element={<Paid><EurGbpHub /></Paid>} />
-    <Route path="eur-gbp" element={<Paid><EurGbpHub /></Paid>} />
+    <Route path="eur-gbp" element={<EurGbpHub />} />
     <Route path="eurjpy" element={<Paid><EurJpyHub /></Paid>} />
-    <Route path="eur-jpy" element={<Paid><EurJpyHub /></Paid>} />
+    <Route path="eur-jpy" element={<EurJpyHub />} />
     <Route path="nzdusd" element={<Navigate to="/nzd-usd" replace />} />
-    <Route path="nzd-usd" element={<Paid><NzdUsdHub /></Paid>} />
+    <Route path="nzd-usd" element={<NzdUsdHub />} />
     <Route path="usdcny" element={<Navigate to="/usd-cny" replace />} />
-    <Route path="usd-cny" element={<Paid><UsdCnyHub /></Paid>} />
+    <Route path="usd-cny" element={<UsdCnyHub />} />
 
     {/* Stock hubs */}
     <Route path="stocks/nvda" element={<Paid><NvidiaHub /></Paid>} />
@@ -277,21 +277,21 @@ export const AppRoutes = () => (
     <Route path="stocks/googl" element={<Paid><AlphabetHub /></Paid>} />
 
     {/* Index hubs */}
-    <Route path="us30" element={<Paid><Us30Hub /></Paid>} />
-    <Route path="dow" element={<Paid><Us30Hub /></Paid>} />
-    <Route path="dj30" element={<Paid><Us30Hub /></Paid>} />
-    <Route path="nas100" element={<Paid><Nas100Hub /></Paid>} />
-    <Route path="nasdaq100" element={<Paid><Nas100Hub /></Paid>} />
-    <Route path="ustec" element={<Paid><Nas100Hub /></Paid>} />
-    <Route path="ger40" element={<Paid><Ger40Hub /></Paid>} />
-    <Route path="dax" element={<Paid><Ger40Hub /></Paid>} />
-    <Route path="de40" element={<Paid><Ger40Hub /></Paid>} />
+    <Route path="us30" element={<Us30Hub />} />
+    <Route path="dow" element={<Us30Hub />} />
+    <Route path="dj30" element={<Us30Hub />} />
+    <Route path="nas100" element={<Nas100Hub />} />
+    <Route path="nasdaq100" element={<Nas100Hub />} />
+    <Route path="ustec" element={<Nas100Hub />} />
+    <Route path="ger40" element={<Ger40Hub />} />
+    <Route path="dax" element={<Ger40Hub />} />
+    <Route path="de40" element={<Ger40Hub />} />
 
-    <Route path="weltrade" element={<Paid><WeltradeHub /></Paid>} />
+    <Route path="weltrade" element={<WeltradeHub />} />
     <Route path="weltrade-trade" element={<Paid><WeltradeTrade /></Paid>} />
-    <Route path="synthetic-hub" element={<Paid><SyntheticHub /></Paid>} />
-    <Route path="synthetic" element={<Paid><SyntheticHub /></Paid>} />
-    <Route path="synthetics" element={<Paid><SyntheticHub /></Paid>} />
+    <Route path="synthetic-hub" element={<SyntheticHub />} />
+    <Route path="synthetic" element={<SyntheticHub />} />
+    <Route path="synthetics" element={<SyntheticHub />} />
     <Route path="auto-trade" element={<Paid><AutoTrade /></Paid>} />
     <Route path="auto" element={<Paid><AutoTrade /></Paid>} />
     <Route path="news-calendar" element={<NewsCalendar />} />

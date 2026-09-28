@@ -193,6 +193,47 @@ export function AssetTradingHub({ config }: { config: AssetTradingHubConfig }) {
           </div>
         )}
 
+        {/* ── SEO / publisher-quality editorial content ───────────────── */}
+        <section className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+          <Card className="border-border/50 bg-card lg:col-span-2">
+            <CardContent className="space-y-3 p-5">
+              <div>
+                <h2 className="text-lg font-extrabold text-foreground">{config.assetLabel} trading guide</h2>
+                <p className="mt-1 text-sm leading-6 text-muted-foreground">
+                  This Botvio hub combines market information, chart tools, signals and educational strategy notes for {config.displaySymbol}.
+                  Use the live market data and published levels as research inputs, then make your own trading decision.
+                </p>
+              </div>
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+                <div className="rounded-lg border border-border/50 bg-muted/20 p-3">
+                  <p className="text-xs font-bold text-foreground">1. Read the market</p>
+                  <p className="mt-1 text-xs leading-5 text-muted-foreground">Check price structure, session conditions and the latest available data.</p>
+                </div>
+                <div className="rounded-lg border border-border/50 bg-muted/20 p-3">
+                  <p className="text-xs font-bold text-foreground">2. Validate a setup</p>
+                  <p className="mt-1 text-xs leading-5 text-muted-foreground">Compare the chart, signal context and strategy rules instead of relying on one indicator.</p>
+                </div>
+                <div className="rounded-lg border border-border/50 bg-muted/20 p-3">
+                  <p className="text-xs font-bold text-foreground">3. Manage risk</p>
+                  <p className="mt-1 text-xs leading-5 text-muted-foreground">Use position sizing and a predefined stop. Leveraged trading can cause rapid losses.</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          <Card className="border-warning/20 bg-warning/5">
+            <CardContent className="space-y-2 p-5">
+              <h2 className="text-sm font-extrabold text-foreground">How Botvio signals work</h2>
+              <p className="text-xs leading-5 text-muted-foreground">
+                Signals shown on this page are generated from the data and rules available to Botvio at the time of publication.
+                A signal is an analytical output, not a guarantee of future price movement or profit.
+              </p>
+              <p className="text-xs leading-5 text-muted-foreground">
+                Market conditions change. Check the signal timestamp, timeframe, entry, stop and target before acting.
+              </p>
+            </CardContent>
+          </Card>
+        </section>
+
         {/* ── Workspace tabs ───────────────────────────────────────── */}
         <Tabs
           value={activeTab}

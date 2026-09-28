@@ -173,7 +173,7 @@ export const MORE_NAV: { label: string; items: NavItem[] }[] = [
   },
 ];
 
-/** Mobile bottom navigation — Markets, Signals, Trade, AI, Learn. */
+/** Mobile bottom navigation — the five highest-frequency destinations plus More. */
 export const BOTTOM_NAV: NavItem[] = [
   { label: "Home", to: "/", icon: Home },
   { label: "Markets", to: "/markets", icon: BarChart3 },

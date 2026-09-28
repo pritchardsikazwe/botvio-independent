@@ -8,7 +8,7 @@ import { HomeChartAnalyzer } from "@/components/home/HomeChartAnalyzer";
 import { GoldPriceHeader } from "@/components/gold/GoldPriceHeader";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ArrowRight, Bell, Bot, Check, ChevronRight, Globe2, LineChart, Menu, ShieldCheck, Sparkles, Users } from "lucide-react";
+import { ArrowRight, Bell, Bot, Check, ChevronRight, Globe2, LineChart, Menu, ShieldCheck, Sparkles, Target, Users } from "lucide-react";
 
 const markets = [
   { name: "Gold", symbol: "XAU/USD", to: "/gold", tag: "Popular" },
@@ -23,6 +23,7 @@ const capabilities = [
   { icon: LineChart, title: "Live Markets", text: "Research forex, gold, crypto, indices and synthetic markets in one place.", to: "/markets" },
   { icon: Sparkles, title: "AI Chart Analysis", text: "Turn a chart into a structured market read with trend, levels and risk context.", to: "/chart/XAUUSD" },
   { icon: Bell, title: "Trading Signals", text: "Discover live opportunities and review signal history before taking action.", to: "/signals" },
+  { icon: Target, title: "Binary & Digital Options", text: "Learn Rise/Fall and other option contracts, review market signals and understand the risks.", to: "/binary-options" },
   { icon: Users, title: "Copy Trading", text: "Explore providers and strategies designed for traders who want automation.", to: "/copy-trading" },
   { icon: Bot, title: "AI Trading Bots", text: "Explore automated strategies and supported trading workflows.", to: "/bots" },
   { icon: Globe2, title: "Broker Hub", text: "Compare brokers and choose the account that fits your market and strategy.", to: "/brokers" },
@@ -68,7 +69,7 @@ const HomeMockup = () => {
             <Button variant="ghost" size="icon" className="lg:hidden" onClick={() => setMobileOpen(v => !v)} aria-label="Open menu" aria-expanded={mobileOpen}><Menu className="h-5 w-5" /></Button>
           </div>
         </div>
-        {mobileOpen && <nav className="border-t border-border/60 bg-background px-4 py-3 lg:hidden"><div className="grid grid-cols-2 gap-2">{[['Start Here','/beginner-guide'],['Markets','/markets'],['AI Analysis','/chart/XAUUSD'],['Signals','/signals'],['Trading','/trading'],['Copy Trading','/copy-trading'],['Bots','/bots'],['Brokers','/brokers'],['Learn','/learn']].map(([label,to]) => <Link key={to} onClick={() => setMobileOpen(false)} to={to} className="rounded-lg border border-border/60 px-3 py-3 text-sm font-semibold">{label}</Link>)}</div></nav>}
+        {mobileOpen && <nav className="border-t border-border/60 bg-background px-4 py-3 lg:hidden"><div className="grid grid-cols-2 gap-2">{[['Start Here','/beginner-guide'],['Markets','/markets'],['AI Analysis','/chart/XAUUSD'],['Signals','/signals'],['Options','/binary-options'],['Trading','/trading'],['Copy Trading','/copy-trading'],['Bots','/bots'],['Brokers','/brokers'],['Learn','/learn']].map(([label,to]) => <Link key={to} onClick={() => setMobileOpen(false)} to={to} className="rounded-lg border border-border/60 px-3 py-3 text-sm font-semibold">{label}</Link>)}</div></nav>}
       </header>
 
       <main>

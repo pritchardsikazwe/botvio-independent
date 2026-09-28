@@ -1,16 +1,8 @@
-import { ExternalLink, ShieldCheck } from "lucide-react";
+import { ExternalLink, ShieldCheck, Zap, Globe, Activity } from "lucide-react";
+import { BROKER_REGISTRY } from "@/config/brokerRegistry";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-
-const BROKERS = [
-  { name: "Deriv", type: "API-connected", description: "Official API path for market data, contract availability and authenticated trading.", url: "https://deriv.com/", badge: "Live API" },
-  { name: "Pocket Option", type: "External broker", description: "Explore the platform and current asset availability. Botvio provides analysis; trading happens on the broker.", url: "https://pocketoption.com/", badge: "External" },
-  { name: "Quotex", type: "External broker", description: "Digital-options platform with demo access. Verify current asset, payout and contract terms on the platform.", url: "https://qxbroker.com/", badge: "External" },
-  { name: "Olymptrade", type: "External broker", description: "Fixed-time and other trading products. Botvio does not assume an execution API where none is officially documented.", url: "https://olymptrade.com/", badge: "External" },
-  { name: "Binomo", type: "External broker", description: "External destination for options trading education and broker access. Verify availability and terms before trading.", url: "https://binomo.com/", badge: "External" },
-  { name: "IQ Option", type: "External broker", description: "External trading platform profile. API execution should only be added after official documentation is verified.", url: "https://iqoption.com/", badge: "External" },
-];
 
 export function OptionsBrokerDirectory() {
   return (
@@ -22,7 +14,7 @@ export function OptionsBrokerDirectory() {
         </p>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-        {BROKERS.map((broker) => (
+        {BROKER_REGISTRY.map((broker) => (
           <Card key={broker.name} className="h-full">
             <CardContent className="p-5 flex flex-col h-full">
               <div className="flex items-center justify-between gap-2">
@@ -31,9 +23,10 @@ export function OptionsBrokerDirectory() {
               </div>
               <p className="text-xs text-muted-foreground mt-1">{broker.type}</p>
               <p className="text-sm text-muted-foreground leading-relaxed mt-3 flex-1">{broker.description}</p>
+              <div className="flex flex-wrap gap-1 mt-3">{broker.capabilities.slice(0, 5).map(cap => <Badge key={cap} variant="secondary" className="text-[10px]">{cap}</Badge>)}</div>
               <div className="flex items-center gap-2 mt-5">
                 <Button asChild className="flex-1">
-                  <a href={broker.url} target="_blank" rel="noopener noreferrer">
+                  <a href={broker.id === "deriv" ? "/deriv-options" : broker.routes[0]?.path || "/brokers"} >
                     Open platform <ExternalLink className="ml-2 h-4 w-4" />
                   </a>
                 </Button>

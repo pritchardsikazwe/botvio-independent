@@ -6,6 +6,7 @@
 import {
   BarChart3,
   Bot,
+  Home,
   BookOpen,
   Calculator,
   ChartCandlestick,
@@ -188,10 +189,10 @@ export const MORE_NAV: { label: string; items: NavItem[] }[] = [
 
 /** Mobile bottom navigation — Markets, Signals, Trade, AI, Learn. */
 export const BOTTOM_NAV: NavItem[] = [
-  { label: "Markets", to: "/markets", icon: ChartCandlestick },
+  { label: "Home", to: "/", icon: Home },
+  { label: "Markets", to: "/markets", icon: BarChart3 },
   { label: "Signals", to: "/signals", icon: Signal },
-  { label: "Trade", to: "/trading", icon: Zap },
-  { label: "AI", to: "/chart/XAUUSD", icon: Sparkles },
-  { label: "Learn", to: "/learn", icon: GraduationCap },
+  { label: "Trade", to: "/trading", icon: ChartCandlestick },
+  { label: "Start", to: "/start", icon: GraduationCap },
 ];
 

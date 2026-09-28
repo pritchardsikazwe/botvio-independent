@@ -216,7 +216,8 @@ const Signals = () => {
 
           <TabsContent value="signals" className="mt-6">
             {/* Quick Direction Chips */}
-            <div className="flex flex-wrap items-center gap-2 mb-4">
+            <div className="mb-4 -mx-1 overflow-x-auto pb-1">
+              <div className="flex min-w-max items-center gap-2 px-1">
               <Button
                 size="sm"
                 variant={direction === "all" ? "default" : "outline"}
@@ -256,6 +257,7 @@ const Signals = () => {
                   {cat.label}
                 </Button>
               ))}
+              </div>
             </div>
 
             {/* Advanced Filters */}
@@ -346,7 +348,7 @@ const Signals = () => {
 
             {/* Signals Grid */}
             {isLoading ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                 {[1, 2, 3, 4, 5, 6].map((i) => (
                   <Card key={i} className="glass-card animate-pulse">
                     <CardContent className="p-6"><div className="h-40 bg-muted/30 rounded-lg" /></CardContent>
@@ -386,8 +388,8 @@ const Signals = () => {
 
             {/* Notification prompt */}
             <Card className="glass-card mt-8 border-primary/30">
-              <CardContent className="py-6">
-                <div className="flex items-center justify-between flex-wrap gap-4">
+              <CardContent className="py-5 sm:py-6">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                   <div className="flex items-center gap-3">
                     <div className="p-2 rounded-lg bg-primary/20">
                       <Bell className="h-5 w-5 text-primary" />
@@ -397,7 +399,7 @@ const Signals = () => {
                       <p className="text-sm text-muted-foreground">Get instant notifications when new signals are posted</p>
                     </div>
                   </div>
-                  <Button variant="gold" onClick={requestPermission} disabled={permission === "granted"}>
+                  <Button className="min-h-11 w-full sm:w-auto" variant="gold" onClick={requestPermission} disabled={permission === "granted"}>
                     {permission === "granted" ? "✓ Notifications On" : "Enable Notifications"}
                   </Button>
                 </div>

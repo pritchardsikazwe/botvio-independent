@@ -1,4 +1,5 @@
-import { ExternalLink, ShieldCheck, Zap, Globe, Activity } from "lucide-react";
+import { ExternalLink, ShieldCheck } from "lucide-react";
+import { Link } from "react-router-dom";
 import { BROKER_REGISTRY } from "@/config/brokerRegistry";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
@@ -24,12 +25,12 @@ export function OptionsBrokerDirectory() {
               <p className="text-xs text-muted-foreground mt-1">{broker.type}</p>
               <p className="text-sm text-muted-foreground leading-relaxed mt-3 flex-1">{broker.description}</p>
               <div className="flex flex-wrap gap-1 mt-3">{broker.capabilities.slice(0, 5).map(cap => <Badge key={cap} variant="secondary" className="text-[10px]">{cap}</Badge>)}</div>
-              {broker.id === "deriv" && <div className="mt-3 pt-3 border-t border-border/40"><p className="text-[11px] font-semibold mb-2">Botvio Deriv routes</p><div className="flex flex-wrap gap-1">{broker.routes.slice(0, 6).map(route => <a key={route.path} href={route.path} className="text-[10px] rounded-md border px-2 py-1 hover:border-primary/50">{route.label}</a>)}</div></div>}
+              {broker.id === "deriv" && <div className="mt-3 pt-3 border-t border-border/40"><p className="text-[11px] font-semibold mb-2">Botvio Deriv routes</p><div className="flex flex-wrap gap-1">{broker.routes.slice(0, 6).map(route => <Link key={route.path} to={route.path} className="text-[10px] rounded-md border px-2 py-1 hover:border-primary/50">{route.label}</a>)}</div></div>}
               <div className="flex items-center gap-2 mt-5">
                 <Button asChild className="flex-1">
-                  <a href={broker.id === "deriv" ? "/deriv-options" : broker.routes[0]?.path || "/brokers"} >
+                  <Link to={broker.id === "deriv" ? "/deriv-options" : broker.routes[0]?.path || "/brokers"} >
                     Open platform <ExternalLink className="ml-2 h-4 w-4" />
-                  </a>
+                  </Link>
                 </Button>
               </div>
               <p className="text-[11px] text-muted-foreground mt-3 flex items-center gap-1">

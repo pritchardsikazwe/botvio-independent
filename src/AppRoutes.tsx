@@ -152,6 +152,7 @@ import Methodology from "./pages/Methodology";
 import PerformanceTransparency from "./pages/PerformanceTransparency";
 import Trust from "./pages/Trust";
 import OAuthConsent from "./pages/OAuthConsent";
+import GoogleAuthCallback from "./pages/GoogleAuthCallback";
 
 import { seoTrafficPages, countryTrafficSlugs } from "@/content/seoTrafficPages";
 
@@ -171,6 +172,7 @@ export const AppRoutes = () => (
     <Route path="start-here" element={<Navigate to="/start" replace />} />
     <Route path="home-classic" element={<Index />} />
     <Route path=".lovable/oauth/consent" element={<OAuthConsent />} />
+    <Route path="auth/google/callback" element={<GoogleAuthCallback />} />
     <Route path="landing" element={<Landing />} />
     <Route path="install" element={<Install />} />
     <Route path="dashboard" element={<RequireAuth><Dashboard /></RequireAuth>} />

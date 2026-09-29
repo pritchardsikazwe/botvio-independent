@@ -371,7 +371,7 @@ export const DerivConnectionPanel = ({ onConnected, showAccountSelection = true 
                   onClick={() => setConnectionMethod("oauth")}
                   className="w-full text-xs text-muted-foreground hover:text-foreground underline underline-offset-2"
                 >
-                  ← Skip the PAT — sign in with your Deriv account instead
+                  OAuth is unavailable here — view connection options →
                 </button>
               </TabsContent>
 
@@ -382,27 +382,27 @@ export const DerivConnectionPanel = ({ onConnected, showAccountSelection = true 
                   </div>
                   <h3 className="font-semibold text-lg mb-2">Sign in with Deriv</h3>
                   <p className="text-sm text-muted-foreground mb-4">
-                    One‑click redirect to Deriv. Log in with your Deriv account and we'll
-                    finish the connection here — no PAT needed.
+                    OAuth is shown as a future connection method. It is not active until
+                    Botvio's server-side token exchange is configured.
                   </p>
                 </div>
 
                 <div className="space-y-3">
                   <div className="flex items-center gap-2 text-sm">
-                    <CheckCircle className="h-4 w-4 text-success" />
-                    <span>No API token to copy or paste</span>
+                    <Info className="h-4 w-4 text-muted-foreground" />
+                    <span>OAuth connection is currently unavailable</span>
                   </div>
                   <div className="flex items-center gap-2 text-sm">
-                    <CheckCircle className="h-4 w-4 text-success" />
-                    <span>Secure OAuth 2.0 with PKCE — you stay on Deriv to sign in</span>
+                    <Info className="h-4 w-4 text-muted-foreground" />
+                    <span>Server-side OAuth token exchange is required</span>
                   </div>
                   <div className="flex items-center gap-2 text-sm">
-                    <CheckCircle className="h-4 w-4 text-success" />
-                    <span>Auto‑syncs balance, currency & real/demo account</span>
+                    <Info className="h-4 w-4 text-muted-foreground" />
+                    <span>Account sync will be available after OAuth is enabled</span>
                   </div>
                   <div className="flex items-center gap-2 text-sm">
-                    <CheckCircle className="h-4 w-4 text-success" />
-                    <span>Revoke anytime from Deriv → Security settings</span>
+                    <Info className="h-4 w-4 text-muted-foreground" />
+                    <span>For now, use PAT and disconnect it from this workspace</span>
                   </div>
                 </div>
 

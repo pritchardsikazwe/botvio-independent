@@ -74,14 +74,8 @@ export const ManualSignalCard = ({ signal, compact = false, showBrokerButtons = 
     return 'text-destructive';
   };
 
-  const getRiskLabel = (confidence: number | null) => {
-    if (!confidence) return null;
-    if (confidence >= 80) return { label: "Low Risk", color: "bg-success/20 text-success border-success/30" };
-    if (confidence >= 60) return { label: "Medium Risk", color: "bg-warning/20 text-warning border-warning/30" };
-    return { label: "High Risk", color: "bg-destructive/20 text-destructive border-destructive/30" };
-  };
+  const confidenceLabel = signal.confidence != null ? signal.confidence : null;
 
-  const riskLabel = getRiskLabel(signal.confidence);
   const chartSymbol = encodeURIComponent(signal.symbol.replace(/[^A-Za-z0-9._-]/g, ""));
 
   if (compact) {
@@ -170,9 +164,9 @@ export const ManualSignalCard = ({ signal, compact = false, showBrokerButtons = 
             <Badge variant={signal.status === 'ACTIVE' ? 'default' : 'secondary'}>
               {signal.status}
             </Badge>
-            {riskLabel && (
-              <Badge variant="outline" className={`text-[10px] ${riskLabel.color}`}>
-                {riskLabel.label}
+            {confidenceLabel != null && (
+              <Badge variant="outline" className="text-[10px]">
+                Model confidence {confidenceLabel}%
               </Badge>
             )}
           </div>
@@ -224,12 +218,7 @@ export const ManualSignalCard = ({ signal, compact = false, showBrokerButtons = 
                 <span className="text-sm font-medium">{signal.confidence}%</span>
               </div>
             )}
-            {signal.ai_win_probability && (
-              <div className="flex items-center gap-1.5 text-primary">
-                <Zap className="h-4 w-4" />
-                <span className="text-sm font-medium">{Math.round(signal.ai_win_probability * 100)}% win prob</span>
-              </div>
-            )}
+
           </div>
           <span className="text-xs text-muted-foreground">{postedDay} {postedTime} · {timeAgo}</span>
         </div>

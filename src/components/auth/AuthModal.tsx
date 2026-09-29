@@ -58,18 +58,25 @@ export const AuthModal = ({ open, onOpenChange }: AuthModalProps) => {
   const handleGoogleSignIn = async () => {
     setGoogleLoading(true);
     try {
+      const next = new URLSearchParams(window.location.search).get("next");
+      const callback = new URL("/auth/google/callback", window.location.origin);
+      if (next && next.startsWith("/") && !next.startsWith("//")) {
+        callback.searchParams.set("next", next);
+      }
+
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
-          redirectTo: window.location.origin,
+          redirectTo: callback.toString(),
         },
       });
       if (error) {
         toast({ title: "Google sign-in failed", description: error.message, variant: "destructive" });
+        setGoogleLoading(false);
       }
+      // On success the browser leaves Botvio for Google and returns to the callback.
     } catch (err: any) {
       toast({ title: "Google sign-in failed", description: err?.message || "Unknown error", variant: "destructive" });
-    } finally {
       setGoogleLoading(false);
     }
   };

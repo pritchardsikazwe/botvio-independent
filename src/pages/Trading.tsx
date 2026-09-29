@@ -32,9 +32,15 @@ const Trading = () => {
     return () => { if (authorized) unsubscribeTicks(selectedPair); };
   }, [authorized, selectedPair, subscribeTicks, unsubscribeTicks]);
 
+  // Do not seed the workspace with a fabricated/stale market price.
+  // Before a live tick arrives, the UI should show an unavailable value.
   const [marketData, setMarketData] = useState<MarketData>({
-    pair: "XAUUSD", price: 2347.85, change24h: 1.23,
-    high24h: 2365.40, low24h: 2328.15, volume: 125400000,
+    pair: "",
+    price: 0,
+    change24h: 0,
+    high24h: 0,
+    low24h: 0,
+    volume: 0,
   });
 
   useEffect(() => {
@@ -61,7 +67,6 @@ const Trading = () => {
       <Header />
       <main className="container mx-auto px-4 py-6">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          {/* Left Sidebar */}
           <div className="lg:col-span-3 space-y-6">
             <div className="glass-card p-4">
               <span className="data-label mb-3 block">Trading Pair</span>
@@ -72,8 +77,6 @@ const Trading = () => {
             <StrategyPanel />
             <TradingHelpPanel />
           </div>
-
-          {/* Main Content */}
           <div className="lg:col-span-6 space-y-6">
             <PriceDisplay data={marketData} />
             <SniperEntry pair={selectedPair} currentPrice={marketData.price} />
@@ -83,8 +86,6 @@ const Trading = () => {
             <ChartUpload />
             <HomeSignalsWidget />
           </div>
-
-          {/* Right Sidebar */}
           <div className="lg:col-span-3 space-y-6">
             <SupportResistanceLevels levels={[]} currentPrice={marketData.price} />
             <PerformancePanel />

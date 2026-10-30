@@ -215,6 +215,11 @@ const Index = () => {
                 <Wifi className="h-4 w-4" /> Deriv AI Options
               </Button>
             </Link>
+            <Link to="/binary-ai" className="block">
+              <Button variant="outline" className="w-full h-12 font-extrabold text-sm gap-2 border-emerald-500/40 text-emerald-500 hover:bg-emerald-500/10 animate-pulse">
+                <Brain className="h-4 w-4" /> Binary AI Rise/Fall
+              </Button>
+            </Link>
             <Link to="/rise-fall" className="block">
               <Button variant="outline" className="w-full h-12 font-extrabold text-sm gap-2 border-primary/40 text-primary hover:bg-primary/10 animate-pulse">
                 <TrendingUp className="h-4 w-4" /> Rise & Fall

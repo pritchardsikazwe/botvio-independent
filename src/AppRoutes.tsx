@@ -153,6 +153,7 @@ import PerformanceTransparency from "./pages/PerformanceTransparency";
 import Trust from "./pages/Trust";
 import OAuthConsent from "./pages/OAuthConsent";
 import GoogleAuthCallback from "./pages/GoogleAuthCallback";
+import BinaryAI from "./pages/BinaryAI";
 
 import { seoTrafficPages, countryTrafficSlugs } from "@/content/seoTrafficPages";
 
@@ -311,6 +312,7 @@ export const AppRoutes = () => (
     <Route path="deriv-options" element={<Paid><DerivOptions /></Paid>} />
     <Route path="deriv-app" element={<RequireAuth><DerivApp /></RequireAuth>} />
     <Route path="rise-fall" element={<RequireAuth><RiseFall /></RequireAuth>} />
+    <Route path="binary-ai" element={<RequireAuth><BinaryAI /></RequireAuth>} />
     <Route path="binary-options" element={<BinaryOptions />} />
     <Route path="brokers/pocket-option" element={<PocketOption />} />
     <Route path="brokers/quotex" element={<Quotex />} />

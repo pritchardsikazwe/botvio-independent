@@ -5,6 +5,7 @@ import { Layers, LineChart, Smartphone, TrendingUp } from "lucide-react";
 /** The four Deriv trading surfaces, always reachable from one another. */
 export const TRADING_SURFACES = [
   { to: "/rise-fall", label: "Rise & Fall", icon: TrendingUp },
+  { to: "/binary-ai", label: "Binary AI", icon: TrendingUp },
   { to: "/deriv-app", label: "Deriv App", icon: Smartphone },
   { to: "/deriv-options", label: "Options", icon: LineChart },
   { to: "/trade/style/rise-fall-scalping", label: "Momentum", icon: Layers },
